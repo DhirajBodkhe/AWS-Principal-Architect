@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide 07 — Direct Connect & Site-to-Site VPN | AWS Principal Architect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=DM+Sans:ital,wght@0,400;0,500;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;--font-mono:'JetBrains Mono',monospace;--radius:6px;--radius-lg:12px;--transition:0.18s ease;--sidebar-width:280px}
+[data-theme="dark"]{--bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--bg4:#30363d;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--text3:#6e7681;--accent:#58a6ff;--accent2:#79c0ff;--heading:#f0f6fc;--code-bg:#161b22;--code-text:#e6edf3;--kw:#ff7b72;--str:#a5d6ff;--comment:#6e7681;--num:#ffa657;--dir:#d2a8ff;--arn:#79c0ff;--hero-bg:linear-gradient(135deg,#0d1117 0%,#161b22 50%,#1a1f28 100%);--sidebar-bg:#0d1117;--ci-bg:rgba(88,166,255,0.08);--ci-b:#58a6ff;--cw-bg:rgba(210,153,34,0.1);--cw-b:#d29922;--cd-bg:rgba(248,81,73,0.1);--cd-b:#f85149;--cs-bg:rgba(63,185,80,0.1);--cs-b:#3fb950;--cp-bg:rgba(188,140,255,0.08);--cp-b:#bc8cff;--cb-bg:rgba(56,189,190,0.08);--cb-b:#38bdbe;--cc-bg:rgba(210,153,34,0.08);--cc-b:#e3b341;--ca-bg:rgba(240,81,200,0.08);--ca-b:#f051c8;--th:#21262d;--ta:rgba(255,255,255,0.02);--pf:#58a6ff;--tb:rgba(88,166,255,0.12);--tt:#79c0ff;--sh:0 4px 24px rgba(0,0,0,0.4);--gb:#1c2433;--gbr:#3d4f6b;--gn:#58a6ff}
+[data-theme="light"]{--bg:#fff;--bg2:#f6f8fa;--bg3:#eaeef2;--bg4:#d0d7de;--border:#d0d7de;--text:#1f2328;--text2:#636c76;--text3:#9198a1;--accent:#0969da;--accent2:#1f6feb;--heading:#1f2328;--code-bg:#f6f8fa;--code-text:#1f2328;--kw:#cf222e;--str:#0a3069;--comment:#6e7781;--num:#953800;--dir:#8250df;--arn:#0969da;--hero-bg:linear-gradient(135deg,#f6f8fa 0%,#eaf2ff 100%);--sidebar-bg:#f6f8fa;--ci-bg:#dbeafe;--ci-b:#0969da;--cw-bg:#fff8c5;--cw-b:#9a6700;--cd-bg:#ffebe9;--cd-b:#cf222e;--cs-bg:#dcffe4;--cs-b:#1a7f37;--cp-bg:#fbefff;--cp-b:#8250df;--cb-bg:#e0f7f7;--cb-b:#0e7f7f;--cc-bg:#fffbdd;--cc-b:#9a6700;--ca-bg:#fff0f8;--ca-b:#bf3989;--th:#eaeef2;--ta:rgba(0,0,0,0.02);--pf:#0969da;--tb:rgba(9,105,218,0.1);--tt:#0969da;--sh:0 4px 24px rgba(0,0,0,0.08);--gb:#f0f6ff;--gbr:#aac4e0;--gn:#0969da}
+[data-theme="paper"]{--bg:#fdf6e3;--bg2:#f5ead0;--bg3:#ece0c4;--bg4:#d4c49e;--border:#c9b88a;--text:#3b2e1e;--text2:#7a6042;--text3:#a08858;--accent:#c0392b;--accent2:#e74c3c;--heading:#2c1e10;--code-bg:#ece0c4;--code-text:#3b2e1e;--kw:#c0392b;--str:#27ae60;--comment:#a08858;--num:#d35400;--dir:#8e44ad;--arn:#c0392b;--hero-bg:linear-gradient(135deg,#fdf6e3 0%,#f5ead0 100%);--sidebar-bg:#f5ead0;--ci-bg:#dceef9;--ci-b:#2980b9;--cw-bg:#fef5d4;--cw-b:#d4a017;--cd-bg:#fde8e8;--cd-b:#c0392b;--cs-bg:#e4f8e4;--cs-b:#27ae60;--cp-bg:#f4eeff;--cp-b:#8e44ad;--cb-bg:#e0f7f2;--cb-b:#1abc9c;--cc-bg:#fefae0;--cc-b:#d4a017;--ca-bg:#fce4f8;--ca-b:#c44fb5;--th:#ece0c4;--ta:rgba(0,0,0,0.03);--pf:#c0392b;--tb:rgba(192,57,43,0.1);--tt:#c0392b;--sh:0 4px 20px rgba(60,30,10,0.12);--gb:#eef6fd;--gbr:#aac4d8;--gn:#2980b9}
+[data-theme="hc"]{--bg:#000;--bg2:#0a0a0a;--bg3:#111;--bg4:#222;--border:#444;--text:#fff;--text2:#ccc;--text3:#888;--accent:#00ffff;--accent2:#00cccc;--heading:#fff;--code-bg:#0a0a0a;--code-text:#fff;--kw:#ff4444;--str:#44ff44;--comment:#888;--num:#ffaa00;--dir:#cc88ff;--arn:#00ffff;--hero-bg:#000;--sidebar-bg:#000;--ci-bg:rgba(0,255,255,0.05);--ci-b:#00ffff;--cw-bg:rgba(255,170,0,0.08);--cw-b:#ffaa00;--cd-bg:rgba(255,68,68,0.08);--cd-b:#ff4444;--cs-bg:rgba(68,255,68,0.08);--cs-b:#44ff44;--cp-bg:rgba(204,136,255,0.08);--cp-b:#cc88ff;--cb-bg:rgba(0,220,220,0.08);--cb-b:#00dcdc;--cc-bg:rgba(255,200,0,0.08);--cc-b:#ffc800;--ca-bg:rgba(255,0,200,0.08);--ca-b:#ff00c8;--th:#111;--ta:rgba(255,255,255,0.03);--pf:#00ffff;--tb:rgba(0,255,255,0.1);--tt:#00ffff;--sh:0 4px 24px rgba(0,200,200,0.1);--gb:#0a1a1a;--gbr:#00aaaa;--gn:#00ffff}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);line-height:1.75;overflow-x:hidden}
+[data-theme="paper"] body{font-family:'Lora',serif}
+#progress-bar{position:fixed;top:0;left:0;height:3px;z-index:9999;background:var(--pf);width:0%;transition:width 0.1s linear;box-shadow:0 0 8px var(--pf)}
+#sidebar{width:var(--sidebar-width);min-height:100vh;background:var(--sidebar-bg);border-right:1px solid var(--border);position:fixed;top:0;left:0;overflow-y:auto;z-index:100;padding:0 0 80px;transition:transform var(--transition)}
+#sidebar-header{padding:20px 16px 16px;border-bottom:1px solid var(--border);background:var(--bg2)}
+#sidebar-header .guide-badge{font-family:var(--font-head);font-size:11px;font-weight:700;color:var(--accent);letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px}
+#sidebar-header h2{font-family:var(--font-head);font-size:13px;font-weight:600;color:var(--heading);line-height:1.4}
+.toc-section{border-bottom:1px solid var(--border)}
+.toc-section-head{padding:8px 16px;font-family:var(--font-mono);font-size:10px;font-weight:500;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none}
+.toc-section-head:hover{color:var(--accent)}
+.toc-items{padding:4px 0}
+.toc-item{display:block;padding:5px 16px 5px 20px;font-size:12.5px;color:var(--text2);text-decoration:none;line-height:1.4;border-left:2px solid transparent;transition:all var(--transition)}
+.toc-item:hover,.toc-item.active{color:var(--accent);background:var(--bg3);border-left-color:var(--accent)}
+.toc-item .sn{font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-right:6px}
+#main{margin-left:var(--sidebar-width);flex:1;min-width:0;padding:0 40px 100px}
+.content-wrap{max-width:880px;margin:0 auto}
+#hamburger{display:none;position:fixed;top:12px;left:12px;z-index:200;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;cursor:pointer;color:var(--text);font-size:18px}
+#theme-switcher{position:fixed;top:12px;right:16px;z-index:200;display:flex;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:50px;padding:4px 8px}
+.theme-btn{border:none;background:transparent;padding:4px 10px;border-radius:50px;cursor:pointer;font-size:11px;font-family:var(--font-head);font-weight:600;color:var(--text2);transition:all var(--transition)}
+.theme-btn:hover,.theme-btn.active{background:var(--accent);color:#fff}
+#back-top{position:fixed;bottom:28px;right:24px;z-index:200;background:var(--accent);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:20px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:var(--sh);transition:all var(--transition)}
+#back-top:hover{transform:translateY(-3px)}
+#back-top.visible{display:flex}
+.hero{background:var(--hero-bg);border-bottom:1px solid var(--border);padding:56px 0 48px;margin-bottom:48px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:400px;height:400px;background:radial-gradient(circle,rgba(88,166,255,0.06) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:880px;margin:0 auto;padding:0 40px}
+.hero-phase{font-family:var(--font-mono);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.hero-phase::before{content:'';display:inline-block;width:20px;height:1px;background:var(--accent)}
+h1.hero-title{font-family:var(--font-head);font-size:clamp(28px,4vw,44px);font-weight:800;color:var(--heading);line-height:1.15;margin-bottom:12px}
+h1.hero-title span{color:var(--accent)}
+.hero-sub{font-size:16px;color:var(--text2);max-width:640px;margin-bottom:24px;line-height:1.6}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.hero-tag{background:var(--tb);color:var(--tt);font-family:var(--font-mono);font-size:11px;padding:4px 10px;border-radius:50px;border:1px solid currentColor;opacity:0.8}
+.hero-readtime{font-size:12px;color:var(--text3);font-family:var(--font-mono);margin-left:auto}
+.diff-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(248,81,73,0.12);color:#f85149;font-size:11px;font-family:var(--font-mono);font-weight:600;padding:4px 10px;border-radius:50px;border:1px solid rgba(248,81,73,0.3)}
+.section-block{margin-bottom:60px}
+.section-label{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:12px}
+.section-label .num{font-weight:700;color:var(--accent)}
+h2.section-title{font-family:var(--font-head);font-size:clamp(20px,2.5vw,28px);font-weight:700;color:var(--heading);line-height:1.25;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:12px}
+h2.section-title .anchor{font-size:16px;color:var(--text3);text-decoration:none;margin-left:8px;opacity:0;transition:opacity var(--transition)}
+h2.section-title:hover .anchor{opacity:1}
+h3{font-family:var(--font-head);font-size:17px;font-weight:700;color:var(--heading);margin:28px 0 10px}
+h4{font-family:var(--font-head);font-size:14px;font-weight:600;color:var(--text);margin:20px 0 8px;text-transform:uppercase;letter-spacing:1px}
+p{margin-bottom:14px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+ul,ol{padding-left:22px;margin-bottom:14px}
+li{margin-bottom:5px}
+strong{color:var(--heading);font-weight:600}
+code{font-family:var(--font-mono);font-size:12px;background:var(--bg3);color:var(--accent);padding:1px 5px;border-radius:3px}
+.code-wrap{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius-lg);margin:20px 0;overflow:hidden}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.code-lang{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
+.copy-btn{font-family:var(--font-mono);font-size:11px;background:transparent;border:1px solid var(--border);color:var(--text2);padding:3px 10px;border-radius:var(--radius);cursor:pointer;transition:all var(--transition)}
+.copy-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.copy-btn.copied{background:var(--cs-b);color:#fff;border-color:transparent}
+pre{padding:18px 20px;overflow-x:auto;font-family:var(--font-mono);font-size:13px;line-height:1.65;color:var(--code-text);tab-size:2}
+.kw{color:var(--kw)}.str{color:var(--str)}.cm{color:var(--comment);font-style:italic}.nm{color:var(--num)}.dr{color:var(--dir)}.ar{color:var(--arn)}
+.callout{border-left:3px solid;border-radius:0 var(--radius-lg) var(--radius-lg) 0;padding:14px 18px;margin:20px 0;font-size:14.5px}
+.callout .ct{font-family:var(--font-head);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.callout.info{background:var(--ci-bg);border-color:var(--ci-b)}.callout.info .ct{color:var(--ci-b)}
+.callout.warn{background:var(--cw-bg);border-color:var(--cw-b)}.callout.warn .ct{color:var(--cw-b)}
+.callout.danger{background:var(--cd-bg);border-color:var(--cd-b)}.callout.danger .ct{color:var(--cd-b)}
+.callout.success{background:var(--cs-bg);border-color:var(--cs-b)}.callout.success .ct{color:var(--cs-b)}
+.callout.protip{background:var(--cp-bg);border-color:var(--cp-b)}.callout.protip .ct{color:var(--cp-b)}
+.callout.bridge{background:var(--cb-bg);border-color:var(--cb-b)}.callout.bridge .ct{color:var(--cb-b)}
+.callout.career{background:var(--cc-bg);border-color:var(--cc-b)}.callout.career .ct{color:var(--cc-b)}
+.callout.ai{background:var(--ca-bg);border-color:var(--ca-b)}.callout.ai .ct{color:var(--ca-b)}
+.table-wrap{overflow-x:auto;margin:20px 0;border-radius:var(--radius-lg);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead th{background:var(--th);font-family:var(--font-head);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--heading);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+tbody td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:nth-child(even){background:var(--ta)}
+.gui-steps{margin:20px 0}
+.gui-step{background:var(--gb);border:1px solid var(--gbr);border-radius:var(--radius-lg);margin-bottom:12px;overflow:hidden}
+.gui-step-head{display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(0,0,0,0.15);border-bottom:1px solid var(--gbr)}
+.gui-step-num{font-family:var(--font-mono);font-weight:700;font-size:12px;color:var(--gn);background:rgba(88,166,255,0.1);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid var(--gn);flex-shrink:0}
+.gui-step-title{font-family:var(--font-head);font-weight:600;font-size:14px;color:var(--heading)}
+.gui-step-body{padding:14px 16px}
+.gui-field{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;margin-bottom:8px;font-size:13px}
+.gui-field-label{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;padding-top:2px}
+.gui-nav{font-family:var(--font-mono);font-size:12px;color:var(--accent2);font-weight:500}
+.gui-nav span{color:var(--text3);margin:0 4px}
+.checkpoint{background:var(--cs-bg);border:1px solid var(--cs-b);border-radius:var(--radius-lg);padding:12px 16px;margin:16px 0;font-size:13.5px}
+.checkpoint strong{color:var(--cs-b)}
+.arch-diagram{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin:24px 0;font-family:var(--font-mono);font-size:12px}
+.arch-row{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.arch-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:8px 14px;text-align:center;font-size:12px;color:var(--text)}
+.arch-box.primary{background:rgba(88,166,255,0.1);border-color:var(--accent);color:var(--accent2);font-weight:600}
+.arch-box.secondary{background:rgba(56,189,190,0.08);border-color:#38bdbe;color:#38bdbe}
+.arch-box.warn{background:rgba(248,81,73,0.08);border-color:#f85149;color:#f85149}
+.arch-box.gold{background:rgba(227,179,65,0.08);border-color:#e3b341;color:#e3b341}
+.arch-box.green{background:rgba(63,185,80,0.08);border-color:#3fb950;color:#3fb950}
+.arch-box.purple{background:rgba(210,168,255,0.08);border-color:#d2a8ff;color:#d2a8ff}
+.arch-arrow{color:var(--text3);font-size:14px;display:flex;align-items:center}
+.arch-divider{border:none;border-top:1px dashed var(--border);margin:12px 0}
+.arch-label{font-family:var(--font-mono);font-size:10px;color:var(--text3);text-align:center;margin:4px 0;text-transform:uppercase;letter-spacing:1px}
+details.tf-block{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);margin:20px 0;overflow:hidden}
+details.tf-block summary{padding:12px 18px;cursor:pointer;display:flex;align-items:center;gap:10px;font-family:var(--font-head);font-weight:600;font-size:13px;color:var(--dir);background:var(--bg3);list-style:none;user-select:none}
+details.tf-block summary::-webkit-details-marker{display:none}
+details.tf-block summary::before{content:'▶';font-size:10px;transition:transform 0.2s}
+details.tf-block[open] summary::before{transform:rotate(90deg)}
+details.tf-block summary .tf-badge{font-family:var(--font-mono);font-size:10px;background:rgba(210,168,255,0.12);border:1px solid var(--dir);color:var(--dir);padding:2px 8px;border-radius:50px;margin-left:auto}
+details.tf-block .code-wrap{margin:0;border-radius:0;border:none;border-top:1px solid var(--border)}
+.accordion{margin:16px 0}
+.acc-item{border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:8px;overflow:hidden}
+.acc-head{padding:14px 18px;cursor:pointer;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;font-weight:600;font-size:14px;color:var(--heading);background:var(--bg2);user-select:none;transition:background var(--transition)}
+.acc-head:hover{background:var(--bg3)}
+.acc-chevron{font-size:12px;color:var(--text3);transition:transform 0.2s;flex-shrink:0;margin-top:3px}
+.acc-item.open .acc-chevron{transform:rotate(180deg)}
+.acc-body{padding:0;max-height:0;overflow:hidden;transition:max-height 0.35s ease,padding 0.3s ease;background:var(--bg)}
+.acc-item.open .acc-body{padding:16px 18px;max-height:4000px}
+.acc-body p:last-child{margin-bottom:0}
+.acc-tag{font-family:var(--font-mono);font-size:10px;padding:2px 8px;border-radius:50px;font-weight:600;flex-shrink:0}
+.acc-tag.beginner{background:rgba(63,185,80,0.12);color:#3fb950}
+.acc-tag.architect{background:rgba(88,166,255,0.12);color:#58a6ff}
+.acc-tag.principal{background:rgba(248,81,73,0.12);color:#f85149}
+.bp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin:20px 0}
+.bp-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px}
+.bp-card .bp-icon{font-size:22px;margin-bottom:8px}
+.bp-card h4{margin:0 0 6px;font-size:13px}
+.bp-card p{font-size:13px;color:var(--text2);margin:0}
+.cheat-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin:14px 0}
+.cheat-section h4{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px}
+@media(max-width:860px){#sidebar{transform:translateX(-100%)}#sidebar.open{transform:translateX(0)}#hamburger{display:flex;align-items:center}#main{margin-left:0;padding:0 20px 80px}.hero-inner{padding:0 20px}}
+@media print{#sidebar,#theme-switcher,#hamburger,#back-top,#progress-bar{display:none!important}#main{margin-left:0}}
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<button id="hamburger" onclick="toggleSidebar()">☰</button>
+<div id="theme-switcher">
+  <button class="theme-btn active" onclick="setTheme('dark')" data-theme="dark">Dark</button>
+  <button class="theme-btn" onclick="setTheme('light')" data-theme="light">Light</button>
+  <button class="theme-btn" onclick="setTheme('paper')" data-theme="paper">Paper</button>
+  <button class="theme-btn" onclick="setTheme('hc')" data-theme="hc">HC</button>
+</div>
+<nav id="sidebar">
+  <div id="sidebar-header">
+    <span class="guide-badge">Guide 07 · Phase 1 · Week 7</span>
+    <h2>Direct Connect &amp; Site-to-Site VPN</h2>
+  </div>
+  <div class="toc-section"><div class="toc-section-head" onclick="toggleToc(this)">Foundations <span>▾</span></div><div class="toc-items">
+    <a class="toc-item" href="#s00"><span class="sn">00</span>Glossary &amp; Key Terms</a>
+    <a class="toc-item" href="#s01"><span class="sn">01</span>Concept &amp; Mental Model</a>
+    <a class="toc-item" href="#s02"><span class="sn">02</span>Architecture Overview</a>
+    <a class="toc-item" href="#s03"><span class="sn">03</span>Service Ecosystem Map</a>
+    <a class="toc-item" href="#s04"><span class="sn">04</span>Prerequisites &amp; Setup</a>
+  </div></div>
+  <div class="toc-section"><div class="toc-section-head" onclick="toggleToc(this)">Implementation <span>▾</span></div><div class="toc-items">
+    <a class="toc-item" href="#s05"><span class="sn">05</span>GUI Implementation</a>
+    <a class="toc-item" href="#s06"><span class="sn">06</span>CLI Verification</a>
+    <a class="toc-item" href="#s07"><span class="sn">07</span>Config &amp; Hardening</a>
+    <a class="toc-item" href="#s08"><span class="sn">08</span>Live Session</a>
+  </div></div>
+  <div class="toc-section"><div class="toc-section-head" onclick="toggleToc(this)">Operations <span>▾</span></div><div class="toc-items">
+    <a class="toc-item" href="#s09"><span class="sn">09</span>Troubleshooting</a>
+    <a class="toc-item" href="#s10"><span class="sn">10</span>Day-2 Operations</a>
+    <a class="toc-item" href="#s11"><span class="sn">11</span>Monitoring &amp; Alerting</a>
+    <a class="toc-item" href="#s12"><span class="sn">12</span>Cost &amp; Pricing</a>
+    <a class="toc-item" href="#s13"><span class="sn">13</span>Limits &amp; Scaling</a>
+    <a class="toc-item" href="#s14"><span class="sn">14</span>Security Deep Dive</a>
+  </div></div>
+  <div class="toc-section"><div class="toc-section-head" onclick="toggleToc(this)">Mastery <span>▾</span></div><div class="toc-items">
+    <a class="toc-item" href="#s15"><span class="sn">15</span>DR &amp; Multi-Region</a>
+    <a class="toc-item" href="#s16"><span class="sn">16</span>Hands-On Lab</a>
+    <a class="toc-item" href="#s17"><span class="sn">17</span>Architectural Patterns</a>
+    <a class="toc-item" href="#s18"><span class="sn">18</span>Cheat Sheet</a>
+  </div></div>
+  <div class="toc-section"><div class="toc-section-head" onclick="toggleToc(this)">Reference <span>▾</span></div><div class="toc-items">
+    <a class="toc-item" href="#s19"><span class="sn">19</span>FAQ — Beginner</a>
+    <a class="toc-item" href="#s20"><span class="sn">20</span>Interview Q&amp;A</a>
+    <a class="toc-item" href="#s21"><span class="sn">21</span>Terraform Deep Dive</a>
+    <a class="toc-item" href="#s22"><span class="sn">22</span>Further Learning</a>
+  </div></div>
+</nav>
+<main id="main"><div class="content-wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-phase">Phase 1 · Foundation Hardening · Week 7</div>
+    <h1 class="hero-title">AWS Direct Connect <span>&amp; Site-to-Site VPN</span></h1>
+    <p class="hero-sub">Private, dedicated connectivity from your data centre to AWS. BGP routing, failover design, DX Gateway for multi-VPC/multi-region, Transit VIF for TGW integration, and the DX+VPN redundancy pattern every FSI hybrid architecture requires. Closest guide to your storage/DC engineering background.</p>
+    <div class="hero-meta">
+      <span class="hero-tag">Direct Connect</span><span class="hero-tag">Site-to-Site VPN</span><span class="hero-tag">VGW</span><span class="hero-tag">DX Gateway</span><span class="hero-tag">Transit VIF</span><span class="hero-tag">BGP</span><span class="hero-tag">BFD</span><span class="hero-tag">LAG</span>
+      <span class="diff-badge">🔴 Principal Level</span>
+      <span class="hero-readtime">~140 min read · 8 hrs hands-on</span>
+    </div>
+  </div>
+</div>
+
+<!-- S00 -->
+<section class="section-block" id="s00">
+  <div class="section-label"><span class="num">00</span> / GLOSSARY</div>
+  <h2 class="section-title">Glossary &amp; Key Terms <a class="anchor" href="#s00">#</a></h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Term</th><th>Plain-English Definition</th><th>Storage/Virt Analog</th></tr></thead>
+    <tbody>
+      <tr><td><strong>AWS Direct Connect (DX)</strong></td><td>A dedicated physical network connection from your on-premises location to an AWS Direct Connect location (colocation facility). Traffic travels over a private circuit, not the public internet.</td><td>≈ A leased line / MPLS circuit to a colocation — dedicated bandwidth, predictable latency, no internet path</td></tr>
+      <tr><td><strong>DX Location</strong></td><td>A colocation facility (e.g., Equinix SG1 in Singapore) where AWS has infrastructure. Your cross-connect from your cage/cabinet connects to AWS's router here.</td><td>≈ A colocation meet-me room — the physical handoff point between your equipment and the carrier's</td></tr>
+      <tr><td><strong>Dedicated Connection</strong></td><td>A full 1 Gbps or 10 Gbps or 100 Gbps physical port allocated exclusively to you. You order directly from AWS.</td><td>≈ A dedicated uplink port on a top-of-rack switch — physically yours, no sharing</td></tr>
+      <tr><td><strong>Hosted Connection</strong></td><td>A sub-1Gbps or shared connection provisioned by an APN Partner who has a Dedicated Connection and carves out a portion for you. Available in 50 Mbps to 10 Gbps.</td><td>≈ A virtual circuit carved from a shared trunk — like an MPLS VPN on a shared carrier backbone</td></tr>
+      <tr><td><strong>Virtual Interface (VIF)</strong></td><td>A logical partition of a DX connection. Three types: Private VIF (connects to a VPC via VGW), Public VIF (connects to AWS public services), Transit VIF (connects to a Transit Gateway).</td><td>≈ A VLAN sub-interface on your uplink — one physical connection, multiple logical paths via 802.1Q tagging</td></tr>
+      <tr><td><strong>Private VIF</strong></td><td>A VIF that connects your on-premises network to a specific VPC via a Virtual Private Gateway. RFC 1918 traffic only. One Private VIF per VGW per DX connection.</td><td>≈ A dedicated VLAN for storage traffic on a trunk — same physical link, isolated logical path</td></tr>
+      <tr><td><strong>Public VIF</strong></td><td>A VIF that connects to AWS public service endpoints (S3, DynamoDB, etc.) over Direct Connect without traversing the internet. Uses public IP prefixes.</td><td>≈ A peering session to a CDN/cloud provider over a private exchange — same physical link, reaching public services privately</td></tr>
+      <tr><td><strong>Transit VIF</strong></td><td>A VIF that connects your on-premises network to a Transit Gateway via a Direct Connect Gateway. Enables one DX connection to reach hundreds of VPCs. Most scalable pattern.</td><td>≈ Connecting your on-prem router to a core routing fabric rather than individual segments — hub connectivity</td></tr>
+      <tr><td><strong>Virtual Private Gateway (VGW)</strong></td><td>The AWS-side VPN/DX concentrator attached to a VPC. Terminates Private VIFs and Site-to-Site VPN tunnels. One VGW per VPC.</td><td>≈ A virtual router instance bound to a network segment — handles route exchange and tunnel termination for that segment</td></tr>
+      <tr><td><strong>Direct Connect Gateway (DXGW)</strong></td><td>A global AWS resource that enables one DX connection (via a Private VIF or Transit VIF) to connect to VGWs or TGWs across multiple regions. Not region-specific.</td><td>≈ A route reflector or aggregation router — one connection point that fans out to multiple destinations</td></tr>
+      <tr><td><strong>Site-to-Site VPN</strong></td><td>An IPSec VPN tunnel over the public internet between your on-premises customer gateway device and an AWS Virtual Private Gateway or Transit Gateway. Two tunnels per VPN connection for redundancy.</td><td>≈ An IPSec tunnel to a remote site over the internet — encrypted, lower cost than leased lines, higher latency/jitter</td></tr>
+      <tr><td><strong>Customer Gateway (CGW)</strong></td><td>An AWS resource representing your on-premises VPN device — defines the device's public IP and BGP ASN. The CGW is an AWS logical object; the actual device is your hardware/software router.</td><td>≈ The peer definition in your IPSec config — you tell AWS what your side looks like (IP + ASN)</td></tr>
+      <tr><td><strong>BGP (Border Gateway Protocol)</strong></td><td>The routing protocol used on both DX and VPN connections to exchange route information dynamically. AWS always uses ASN 7224 (or a custom ASN) on DX; your router uses your own ASN.</td><td>≈ The same BGP you run for internet peering or MPLS VPNs — path-vector routing, AS_PATH manipulation, MED/LOCAL_PREF for traffic engineering</td></tr>
+      <tr><td><strong>BFD (Bidirectional Forwarding Detection)</strong></td><td>A rapid failure detection protocol that can detect link failures in under 1 second. Supported on DX; much faster than BGP hold-down timers. Critical for sub-second DX failover to VPN backup.</td><td>≈ The same BFD you'd run on MPLS PEs for fast-reroute — detects failure in milliseconds vs BGP's 90-second default</td></tr>
+      <tr><td><strong>LAG (Link Aggregation Group)</strong></td><td>Bundles multiple DX Dedicated Connections into a single logical interface using 802.3ad LACP. Increases bandwidth and provides link-level redundancy. Up to 4 connections per LAG.</td><td>≈ An 802.3ad LACP bond on your server or ToR switch — multiple physical links, one logical interface</td></tr>
+      <tr><td><strong>MACsec</strong></td><td>IEEE 802.1AE Layer 2 encryption on DX Dedicated Connections (10 Gbps and 100 Gbps). Encrypts traffic at the Ethernet frame level between your router and the AWS DX router.</td><td>≈ MACsec on your campus fabric — wire-speed Layer 2 encryption, no performance penalty</td></tr>
+      <tr><td><strong>Hosted VIF</strong></td><td>A Virtual Interface provisioned by an APN Partner into your AWS account. You accept it in the console. Allows access to DX connectivity without your own physical port.</td><td>≈ A virtual circuit handed off from a service provider — they own the physical, you manage the logical</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- S01 -->
+<section class="section-block" id="s01">
+  <div class="section-label"><span class="num">01</span> / CONCEPT</div>
+  <h2 class="section-title">Concept &amp; Mental Model <a class="anchor" href="#s01">#</a></h2>
+
+  <h3>Why Not Just Use the Internet?</h3>
+  <p>The public internet is unpredictable. Latency varies. Routes change. Congestion on backbone peering points causes packet loss during peak hours. For a bank moving real-time payments data or a trading firm with microsecond-sensitive market data feeds, "unpredictable" is unacceptable. Direct Connect gives you a dedicated, private, physically separate path to AWS with consistent latency (typically 2–5 ms Singapore on-prem to ap-southeast-1), predictable throughput, and no exposure to the public internet's routing instability.</p>
+  <p>Site-to-Site VPN uses the internet but adds IPSec encryption. It's cheaper, faster to provision (minutes vs weeks for DX), and is the standard backup path for DX. Every production FSI DX deployment has a VPN backup — DX goes down, BGP fails over to VPN automatically.</p>
+
+  <h3>Three Core Concepts to Internalize</h3>
+  <p><strong>1. DX is physical, and physical takes time.</strong> Ordering a DX Dedicated Connection requires a Letter of Authorization (LOA-CFA) from AWS, then you or your colocation provider does the physical cross-connect at the DX location. This takes 2–12 weeks depending on the facility. Start the DX order at the beginning of a project, not when you need it. Hosted Connections through a partner are faster (days not weeks) but share the underlying physical port.</p>
+  <p><strong>2. VIFs are the logical layer; the physical port just carries them.</strong> A single 10 Gbps DX Dedicated Connection can carry multiple VIFs — a Private VIF to your production VPC, a Public VIF to reach S3 privately, and a Transit VIF to a TGW that serves 50 VPCs. BGP sessions run independently per VIF. This is the same mental model as 802.1Q trunking — one physical link, multiple isolated logical paths.</p>
+  <p><strong>3. BGP is how you control traffic engineering.</strong> AWS advertises VPC CIDR ranges to your on-premises router via BGP over the VIF. Your on-premises router advertises your corporate prefixes to AWS. Traffic follows the BGP best path. You influence path selection using standard BGP attributes: AS_PATH prepending (make a path look less preferred), MED (suggest a preferred entry point to AWS), and LOCAL_PREF on your side (prefer DX over VPN backup). If you already run BGP for internet peering or MPLS, this is the same tool set applied to AWS connectivity.</p>
+
+  <h3>What Did Engineers Do Before Direct Connect?</h3>
+  <p>Before DX (available from 2012), all AWS connectivity was over the public internet. Large enterprises ran Site-to-Site VPN but accepted internet-path variability. FSI firms were effectively blocked from putting latency-sensitive workloads on AWS because of this variability. DX changed the calculus entirely — it made AWS connectivity equivalent to an MPLS leased line, predictable enough for financial-grade workloads. The Singapore DX locations (Equinix SG1, Equinix SG2) are where most FSI firms connect today.</p>
+
+  <h3>The Leased Line + VLAN Analogy</h3>
+  <p>Direct Connect ≈ an MPLS leased line to a carrier colocation where AWS happens to peer. VIFs ≈ MPLS VPNs or 802.1Q VLANs on that leased line — one physical circuit, multiple isolated logical services. BGP ≈ the same BGP you run with your MPLS provider for route exchange. The VGW ≈ the CE router in an MPLS VPN model — it terminates the virtual circuit and exchanges routes with the PE (AWS) side. The Direct Connect Gateway ≈ a route reflector that distributes routes between your single DX connection and multiple AWS regions/VPCs.</p>
+
+  <div class="callout bridge">
+    <div class="ct">🌉 Bridge from Storage/Virtualisation</div>
+    <p><strong>Direct Connect ≈ a dedicated 10GbE cross-connect from your DC to an AWS colocation cage.</strong> You've provisioned storage network connectivity via direct-attach, FC fabric, or iSCSI — DX is the same concept applied to cloud connectivity. The physical cross-connect at Equinix SG1 ≈ a cable between your switch port and the patch panel in the meet-me room. VIFs ≈ 802.1Q VLAN sub-interfaces on that cable — same physical path, logically separated by VLAN ID. BGP over DX ≈ the BGP you'd run over an MPLS CE-PE interface — standard route exchange, same attributes, same traffic engineering levers (MED, LOCAL_PREF, AS_PATH). BFD ≈ the link-state detection you'd run on a bonded uplink — sub-second failure detection without waiting for the routing protocol to time out. MACsec ≈ 802.1AE encryption on your campus fabric — wire-speed Layer 2 encryption between your router and the DX endpoint, transparent to Layer 3.</p>
+  </div>
+
+  <div class="callout info">
+    <div class="ct">💡 Why This Matters — FSI Hybrid Architecture</div>
+    <p>MAS TRM §11 requires that data connections to cloud providers meet confidentiality and integrity standards. Direct Connect satisfies the private connectivity requirement — traffic never touches the public internet. Combined with MACsec (Layer 2 encryption) or IPSec over VPN (Layer 3 encryption), you satisfy both the private path (§11.1) and the encryption in transit (§11.3) requirements simultaneously. Every FSI hybrid cloud architecture in Singapore has a DX connection as its primary AWS connectivity. The VPN backup pattern is the standard HA approach. Understanding how to design, provision, and operate this connectivity is core to any FSI cloud architect role.</p>
+  </div>
+</section>
+
+<!-- S02 -->
+<section class="section-block" id="s02">
+  <div class="section-label"><span class="num">02</span> / ARCHITECTURE</div>
+  <h2 class="section-title">Architecture Overview <a class="anchor" href="#s02">#</a></h2>
+
+  <h3>Direct Connect — Physical to Logical Stack</h3>
+  <div class="arch-diagram">
+    <div class="arch-label">On-premises / Colocation</div>
+    <div class="arch-row">
+      <div class="arch-box gold">Your CE Router<br><small>BGP ASN: 65000</small></div>
+      <div class="arch-arrow">── 802.1Q trunk ──→</div>
+      <div class="arch-box">DX Location<br><small>Equinix SG1<br>cross-connect</small></div>
+      <div class="arch-arrow">──→</div>
+      <div class="arch-box primary">AWS DX Router<br><small>BGP ASN: 7224</small></div>
+    </div>
+    <div class="arch-divider"></div>
+    <div class="arch-label">One physical connection — multiple VIFs (802.1Q VLAN-tagged)</div>
+    <div class="arch-row">
+      <div class="arch-box secondary">Private VIF<br><small>VLAN 100 → VGW → VPC</small></div>
+      <div class="arch-box green">Transit VIF<br><small>VLAN 200 → DXGW → TGW → N VPCs</small></div>
+      <div class="arch-box purple">Public VIF<br><small>VLAN 300 → S3, DynamoDB, ECR</small></div>
+    </div>
+  </div>
+
+  <h3>DX Gateway — Multi-Region / Multi-VPC Fan-Out</h3>
+  <div class="arch-diagram">
+    <div class="arch-row">
+      <div class="arch-box gold">On-Prem Router</div>
+      <div class="arch-arrow">→ Private/Transit VIF →</div>
+      <div class="arch-box primary">DX Gateway<br><small>Global resource<br>no regional dependency</small></div>
+    </div>
+    <div class="arch-row"><div class="arch-arrow">↓ Fan-out to multiple regions</div></div>
+    <div class="arch-row">
+      <div class="arch-box secondary">ap-southeast-1<br>VGW → VPC-A<br>VGW → VPC-B</div>
+      <div class="arch-box secondary">ap-southeast-3<br>VGW → VPC-DR</div>
+      <div class="arch-box secondary">TGW ap-southeast-1<br>(via Transit VIF)</div>
+    </div>
+    <div class="arch-divider"></div>
+    <div class="arch-label">One DX connection + DXGW = connectivity to any AWS region worldwide</div>
+  </div>
+
+  <h3>Site-to-Site VPN Architecture</h3>
+  <div class="arch-diagram">
+    <div class="arch-row">
+      <div class="arch-box gold">Customer Gateway<br><small>Your on-prem device</small></div>
+      <div class="arch-arrow">── IPSec Tunnel 1 ──→</div>
+      <div class="arch-box primary">VGW or TGW<br><small>Tunnel terminates here</small></div>
+    </div>
+    <div class="arch-row">
+      <div class="arch-box gold">Same device</div>
+      <div class="arch-arrow">── IPSec Tunnel 2 ──→</div>
+      <div class="arch-box primary">Different AZ endpoint<br><small>Active/Active or Active/Passive</small></div>
+    </div>
+    <div class="arch-divider"></div>
+    <div class="arch-label">Always 2 tunnels per VPN connection — different AZs, different AWS endpoints</div>
+  </div>
+
+  <h3>DX + VPN Redundancy Pattern (Standard FSI Design)</h3>
+  <div class="arch-diagram">
+    <div class="arch-label">Primary path: Direct Connect (preferred via BGP LOCAL_PREF or MED)</div>
+    <div class="arch-row">
+      <div class="arch-box gold">On-Prem Router</div>
+      <div class="arch-arrow">── DX Private/Transit VIF ──→</div>
+      <div class="arch-box primary">VGW / TGW</div>
+      <div class="arch-arrow">──→</div>
+      <div class="arch-box secondary">VPC</div>
+    </div>
+    <div class="arch-label">Backup path: Site-to-Site VPN (BFD detects DX failure → BGP fails over in &lt;1 sec)</div>
+    <div class="arch-row">
+      <div class="arch-box gold">Same Router</div>
+      <div class="arch-arrow">── VPN over internet ──→</div>
+      <div class="arch-box warn">Same VGW / TGW<br><small>lower LOCAL_PREF</small></div>
+      <div class="arch-arrow">──→</div>
+      <div class="arch-box secondary">Same VPC</div>
+    </div>
+    <div class="arch-divider"></div>
+    <div class="arch-label">BFD on DX VIF detects failure in &lt;1 sec → BGP withdraws DX routes → VPN routes win</div>
+  </div>
+
+  <h3>VIF Types Comparison</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>VIF Type</th><th>Connects To</th><th>Traffic Type</th><th>Use Case</th><th>BGP Prefixes</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Private VIF</strong></td><td>Single VPC via VGW</td><td>RFC 1918 (private IPs)</td><td>Direct VPC access, one-to-one</td><td>VPC CIDR(s) advertised to you</td></tr>
+      <tr><td><strong>Public VIF</strong></td><td>AWS public service endpoints globally</td><td>Public IP space</td><td>S3, DynamoDB, ECR access without internet</td><td>All AWS public prefixes (~10k routes)</td></tr>
+      <tr><td><strong>Transit VIF</strong></td><td>TGW via DX Gateway</td><td>RFC 1918 (private IPs)</td><td>Scale to hundreds of VPCs via single VIF</td><td>VPC CIDRs via TGW route table</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout warn">
+    <div class="ct">⚠️ Private VIF vs Transit VIF — The Scalability Cliff</div>
+    <p>A common early DX architecture mistake: use Private VIFs for each VPC. This works for 2–3 VPCs but creates a management nightmare at scale. You can only attach one Private VIF to one VGW — so 20 VPCs means 20 VGWs, 20 BGP sessions on your router, and 20 route entries per VPC. The correct architecture for multi-VPC environments: one Transit VIF → DX Gateway → Transit Gateway → all VPCs. One BGP session on your router, one route entry per VPC CIDR in TGW's route table. Migrate to this pattern early; retrofitting it is painful.</p>
+  </div>
+</section>
+
+<!-- S03 -->
+<section class="section-block" id="s03">
+  <div class="section-label"><span class="num">03</span> / ECOSYSTEM</div>
+  <h2 class="section-title">Service Ecosystem Map <a class="anchor" href="#s03">#</a></h2>
+
+  <h3>3.1 What Connects Into DX / VPN</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Source</th><th>Connection Type</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Your on-prem router / firewall</strong></td><td>DX cross-connect + VIFs, or VPN CGW</td><td>Must support BGP. For DX: Cisco, Juniper, Palo Alto, Arista. For VPN: any IPSec-capable device.</td></tr>
+      <tr><td><strong>Colocation provider (DX Partner)</strong></td><td>Hosted Connection</td><td>Equinix, Singtel, Starhub, Global Switch in Singapore. Faster than Dedicated — days not weeks.</td></tr>
+      <tr><td><strong>SD-WAN appliances</strong></td><td>Site-to-Site VPN (IPSec)</td><td>Cisco Viptela, Fortinet, Palo Alto Prisma. AWS VPN is a common SD-WAN underlay.</td></tr>
+      <tr><td><strong>AWS Transit Gateway</strong></td><td>Transit VIF via DX Gateway</td><td>The TGW is the attachment point for Transit VIF — enables one DX to reach all TGW-attached VPCs</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>3.2 What DX / VPN Enables</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Downstream Service</th><th>What It Gets</th><th>Why It Matters</th></tr></thead>
+    <tbody>
+      <tr><td><strong>VPC (via Private VIF + VGW)</strong></td><td>Private IP connectivity between on-prem and VPC resources</td><td>EC2, RDS, EFS, ALB — all reachable privately without internet</td></tr>
+      <tr><td><strong>Transit Gateway (via Transit VIF)</strong></td><td>Connectivity to all TGW-attached VPCs from one DX connection</td><td>Scalable multi-VPC hub — one BGP session, many destinations</td></tr>
+      <tr><td><strong>S3 / DynamoDB (via Public VIF)</strong></td><td>Access to public AWS services without internet path</td><td>Data transfer from on-prem to S3 over DX — consistent throughput, no internet egress cost</td></tr>
+      <tr><td><strong>Route 53 Resolver (hybrid DNS)</strong></td><td>On-prem DNS queries forwarded to Route 53 over DX/VPN</td><td>Resolves AWS private hosted zone names from on-prem. Prerequisite for seamless hybrid naming.</td></tr>
+      <tr><td><strong>PrivateLink endpoints</strong></td><td>Private connectivity to AWS services + partner services</td><td>Over DX/VPN, on-prem hosts can reach PrivateLink endpoints in VPCs without traversing internet</td></tr>
+      <tr><td><strong>AWS Backup / Storage Gateway</strong></td><td>On-prem backup/storage data flows to AWS over DX</td><td>High-throughput, consistent backup windows — critical for large data sets that internet VPN can't sustain</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>3.3 Canonical Patterns</h3>
+  <h4>Pattern 1: DX Primary + VPN Backup (Standard FSI)</h4>
+  <p>Single DX connection (or LAG) as primary path. BGP LOCAL_PREF or MED set so DX routes are preferred. Site-to-Site VPN as backup over internet. BFD on DX VIF detects failure in &lt;1 second. BGP converges and VPN routes become active. Failover is automatic — no human intervention. RTO for connectivity failure: &lt;5 seconds with BFD. This is the architecture in virtually every Singapore FSI AWS deployment.</p>
+
+  <h4>Pattern 2: Dual DX (Diverse Locations)</h4>
+  <p>Two DX Dedicated Connections from two different DX locations (e.g., Equinix SG1 and Equinix SG2). Traffic load-balanced via ECMP BGP or Active/Passive with MED preference. Provides full redundancy against a single DX location failure — not just a circuit failure. Higher cost but appropriate for critical financial workloads where DX failure must not cause any outage. Each DX connects to the same DX Gateway and TGW.</p>
+
+  <h4>Pattern 3: Transit VIF + TGW Hub (Multi-VPC Scale)</h4>
+  <p>One DX connection → Transit VIF → DX Gateway → Transit Gateway → all workload VPCs. On-prem router has one BGP session. New VPCs are added to TGW without any DX or BGP change — just add a TGW attachment. This is the correct architecture for any Organisation with 5+ VPCs. Scales to hundreds of VPCs with a single DX connection.</p>
+
+  <h4>Pattern 4: Public VIF for S3/Service Access</h4>
+  <p>A dedicated Public VIF on the same DX connection as the Private VIF. On-prem workloads access S3, ECR, and other public services without hairpinning through the VPC. Direct path: on-prem → DX → AWS public endpoints. Eliminates the common pattern of routing S3 traffic through a NAT Gateway in the VPC (expensive, adds latency). Data transfer over DX Public VIF to S3 is not billed for DX data-out — only S3 standard egress rates apply.</p>
+
+  <h4>Pattern 5: DX + VPN for Multi-Region DR</h4>
+  <p>Primary DX to ap-southeast-1 (Singapore) via DX Gateway. DX Gateway also attached to ap-southeast-3 VGW (Jakarta) for DR. VPN backup for both regions. In a DR event where ap-southeast-1 is unavailable, the DX Gateway remains connected to ap-southeast-3. No new physical connection required. The DX Gateway's global nature is the design advantage — one physical connection, connectivity to any AWS region you attach to the DXGW.</p>
+
+  <div class="callout danger">
+    <div class="ct">🚫 Anti-Pattern: Single DX, No VPN Backup</div>
+    <p>A single DX connection with no VPN backup is an availability risk that fails MAS TRM §14 BCM requirements. DX connections do fail — maintenance windows, cable cuts, equipment failures at the DX location. Without VPN backup, a DX failure means complete loss of AWS connectivity. In 2019, a major AWS DX location outage in Asia-Pacific affected hundreds of customers who had no backup path. Every production DX deployment must have a VPN backup, even if VPN performance is inadequate for normal workloads — it provides connectivity for management access and low-volume traffic during DX outages.</p>
+  </div>
+
+  <h3>3.4 Operational Dependencies</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Dependency</th><th>Why Required</th><th>What Breaks Without It</th></tr></thead>
+    <tbody>
+      <tr><td><strong>BGP-capable router on-prem</strong></td><td>Both DX and VPN use BGP for dynamic route exchange</td><td>Static routing is possible but unmanageable at scale — no automatic failover without BGP</td></tr>
+      <tr><td><strong>Public ASN (DX)</strong></td><td>DX requires a valid BGP ASN on your side. Private ASNs (64512–65535) are allowed for Private VIFs; public ASNs required for Public VIFs</td><td>BGP session cannot establish</td></tr>
+      <tr><td><strong>Letter of Authorization (LOA-CFA)</strong></td><td>Required for the DX location to provision the cross-connect to AWS's cage</td><td>Physical connection cannot be made without the LOA</td></tr>
+      <tr><td><strong>VGW attached to VPC</strong></td><td>Private VIF must attach to a VGW; VGW must be attached to a VPC with route propagation enabled</td><td>Routes from on-prem not propagated into VPC route tables</td></tr>
+      <tr><td><strong>Route propagation enabled in VPC route tables</strong></td><td>Even with VGW attached, routes from BGP are not automatically added to route tables unless propagation is enabled</td><td>Asymmetric routing — on-prem traffic arrives in VPC but return traffic has no route back</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>3.5 DX vs VPN vs Internet — Decision Matrix</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Criterion</th><th>Direct Connect</th><th>Site-to-Site VPN</th><th>Internet (no VPN)</th></tr></thead>
+    <tbody>
+      <tr><td>Latency (SG to ap-southeast-1)</td><td>2–5 ms (consistent)</td><td>5–20 ms (variable)</td><td>10–50 ms (variable, lossy)</td></tr>
+      <tr><td>Bandwidth</td><td>50 Mbps – 100 Gbps</td><td>Up to ~1.25 Gbps per tunnel</td><td>Shared, unpredictable</td></tr>
+      <tr><td>Cost</td><td>High (port fee + data transfer)</td><td>Low ($0.05/hr + data transfer)</td><td>$0 ingress, AWS egress rates</td></tr>
+      <tr><td>Provisioning time</td><td>2–12 weeks (Dedicated)</td><td>Minutes</td><td>Immediate</td></tr>
+      <tr><td>Security</td><td>Private path (+ MACsec optional)</td><td>IPSec encrypted</td><td>Unencrypted — never use for sensitive data</td></tr>
+      <tr><td>MAS TRM compliance</td><td>✅ Satisfies private connectivity §11</td><td>✅ Satisfies encryption §11.3</td><td>❌ Does not satisfy §11</td></tr>
+      <tr><td>HA pattern</td><td>Redundant DX or DX+VPN</td><td>Two tunnels per connection + multiple connections</td><td>N/A</td></tr>
+      <tr><td>Best for</td><td>Production FSI workloads, bulk data transfer, latency-sensitive</td><td>Backup path, dev/test, quick connectivity, cost-sensitive</td><td>Public-facing services only</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout ai">
+    <div class="ct">🤖 AI / Agentic Angle</div>
+    <p>AI inference latency is acutely sensitive to network path quality. An agentic workflow running on-premises (e.g., a trading platform's pre-trade risk engine) calling a Bedrock endpoint for real-time market commentary requires consistent, sub-10ms round-trip to AWS. Over internet VPN this is unreliable; over DX it's 4–6 ms consistently. For hybrid AI architectures where on-prem model inference feeds into AWS orchestration layers (Step Functions, Lambda), DX is not optional — it's the difference between a viable agentic response latency (under 200ms end-to-end) and an unacceptable one. As LLM inference moves toward real-time applications in FSI, DX connectivity becomes part of the AI architecture design, not just the network design.</p>
+  </div>
+</section>
+
+<!-- S04 -->
+<section class="section-block" id="s04">
+  <div class="section-label"><span class="num">04</span> / PREREQUISITES</div>
+  <h2 class="section-title">Prerequisites &amp; Environment Setup <a class="anchor" href="#s04">#</a></h2>
+
+  <h3>For Direct Connect</h3>
+  <ul>
+    <li><strong>AWS account with billing</strong> and appropriate IAM permissions (<code>directconnect:*</code>)</li>
+    <li><strong>Physical presence at or arrangement with a DX location</strong>: For Singapore, this means Equinix SG1/SG2, Global Switch, or an APN Partner with a Hosted Connection offering. For the lab, you'll use a Hosted Connection simulation or the console-only walkthrough.</li>
+    <li><strong>BGP-capable router</strong> with a configured ASN. For lab use, a software router (VyOS, FRR on a VM) suffices.</li>
+    <li><strong>VPC already created</strong> in ap-southeast-1 with CIDR that doesn't overlap with your on-prem range. If using Transit VIF: TGW also created (Guide 02).</li>
+    <li><strong>BGP ASN for your side</strong>: Private ASN (e.g., 65000) is fine for Private VIF. Document it — you'll need it when creating the VIF in the console.</li>
+  </ul>
+
+  <h3>For Site-to-Site VPN</h3>
+  <ul>
+    <li><strong>Customer gateway device</strong>: Public IP required (static preferred; dynamic IP CGW supported with certificate-based authentication). For the lab, use a VyOS or pfSense VM with a public IP, or AWS's VPN simulator.</li>
+    <li><strong>VGW or TGW</strong> already created and attached to your VPC</li>
+    <li><strong>Pre-shared key or certificate</strong>: The console generates a pre-shared key by default; certificate-based is more secure for production</li>
+    <li><strong>On-prem subnet ranges</strong> that will be advertised via BGP to AWS</li>
+  </ul>
+
+  <div class="callout danger">
+    <div class="ct">💰 Cost Warning</div>
+    <ul>
+      <li><strong>DX Dedicated Connection port:</strong> 1 Gbps = $216/month; 10 Gbps = $1,620/month (ap-southeast-1). This is the port fee regardless of traffic volume.</li>
+      <li><strong>DX data transfer out:</strong> $0.02/GB (within AWS to on-prem over DX, ap-southeast-1). Standard AWS data transfer rates apply inbound.</li>
+      <li><strong>DX Gateway:</strong> Free. No charge for the gateway object itself.</li>
+      <li><strong>Site-to-Site VPN:</strong> $0.05/hr per VPN connection = ~$36/month per connection. Plus standard data transfer rates.</li>
+      <li><strong>LAG:</strong> Billed per individual connection in the LAG — 4× 10 Gbps LAG = 4× $1,620 = $6,480/month.</li>
+      <li><strong>Lab estimate:</strong> If you use a Hosted Connection from a partner for the lab, expect ~$100–200 for a 50 Mbps connection/month. VPN lab costs ~$5 for a few hours.</li>
+    </ul>
+  </div>
+
+  <div class="callout bridge">
+    <div class="ct">🌉 Bridge from Storage/Virtualisation</div>
+    <p>Setting up DX prerequisites ≈ ordering a new uplink to a colocation facility. You need: (1) your equipment racked at the colo (or a patch to your existing equipment), (2) the LOA paperwork authorising the cross-connect, (3) the cross-connect physically installed by the colo's hands-and-eyes team, (4) the logical configuration (BGP ASN, IP addresses, VLANs) agreed between you and the upstream provider. In AWS's case, the "upstream provider" is AWS itself — they provision the router port, you provision the VIF, and BGP does the rest. The process is the same as any carrier circuit turn-up; only the AWS console replaces the carrier's order portal.</p>
+  </div>
+
+  <details class="tf-block">
+    <summary>🧭 Terraform Rosetta Stone — Prerequisites: VGW + CGW <span class="tf-badge">HCL Reference</span></summary>
+    <div class="code-wrap"><div class="code-header"><span class="code-lang">HCL — prerequisites.tf</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm"># Virtual Private Gateway — attach to VPC for DX Private VIF or VPN</span>
+<span class="kw">resource</span> <span class="str">"aws_vpn_gateway"</span> <span class="str">"main"</span> {
+  vpc_id          = <span class="kw">aws_vpc</span>.main.id
+  amazon_side_asn = <span class="nm">64512</span>   <span class="cm"># AWS side ASN for this VGW — custom or default 64512</span>
+  tags = { Name = <span class="str">"netrust-prod-vgw"</span> }
+}
+
+<span class="cm"># Enable BGP route propagation to route tables</span>
+<span class="kw">resource</span> <span class="str">"aws_vpn_gateway_route_propagation"</span> <span class="str">"private"</span> {
+  vpn_gateway_id = <span class="kw">aws_vpn_gateway</span>.main.id
+  route_table_id = <span class="kw">aws_route_table</span>.private.id
+  <span class="cm"># Without this, VGW learns routes via BGP but they're NOT added to route tables</span>
+  <span class="cm"># This is the #1 missed step when DX/VPN stops working</span>
+}
+
+<span class="cm"># Customer Gateway — represents your on-prem router</span>
+<span class="kw">resource</span> <span class="str">"aws_customer_gateway"</span> <span class="str">"onprem"</span> {
+  bgp_asn    = <span class="nm">65000</span>           <span class="cm"># Your on-prem router's BGP ASN</span>
+  ip_address = <span class="str">"203.0.113.1"</span>   <span class="cm"># Your on-prem router's public IP</span>
+  type       = <span class="str">"ipsec.1"</span>
+  tags = { Name = <span class="str">"netrust-dc-router"</span> }
+}
+
+<span class="cm"># Site-to-Site VPN Connection</span>
+<span class="kw">resource</span> <span class="str">"aws_vpn_connection"</span> <span class="str">"backup"</span> {
+  vpn_gateway_id      = <span class="kw">aws_vpn_gateway</span>.main.id
+  customer_gateway_id = <span class="kw">aws_customer_gateway</span>.onprem.id
+  type                = <span class="str">"ipsec.1"</span>
+  static_routes_only  = <span class="kw">false</span>   <span class="cm"># false = BGP (recommended); true = static routes</span>
+
+  <span class="cm"># Tunnel 1 options</span>
+  tunnel1_inside_cidr   = <span class="str">"169.254.10.0/30"</span>
+  tunnel1_preshared_key = <span class="kw">var</span>.vpn_psk_1   <span class="cm"># Store in Secrets Manager, not hardcoded</span>
+
+  <span class="cm"># Tunnel 2 options (different AZ from Tunnel 1)</span>
+  tunnel2_inside_cidr   = <span class="str">"169.254.11.0/30"</span>
+  tunnel2_preshared_key = <span class="kw">var</span>.vpn_psk_2
+
+  tags = { Name = <span class="str">"netrust-vpn-backup"</span> }
+}</pre>
+    </div></details>
+</section>
+
+<!-- S05 -->
+<section class="section-block" id="s05">
+  <div class="section-label"><span class="num">05</span> / GUI IMPLEMENTATION</div>
+  <h2 class="section-title">Step-by-Step GUI Implementation <a class="anchor" href="#s05">#</a></h2>
+  <p>Three parts: (A) Site-to-Site VPN (quickest to provision, can be tested immediately), (B) Direct Connect setup (console walkthrough — physical step takes weeks), (C) DX Gateway + Transit VIF pattern.</p>
+
+  <h3>Part A: Site-to-Site VPN (Can Test Today)</h3>
+  <div class="gui-steps">
+    <div class="gui-step">
+      <div class="gui-step-head"><div class="gui-step-num">1</div><div class="gui-step-title">Create the Virtual Private Gateway</div></div>
+      <div class="gui-step-body">
+        <div class="gui-field"><span class="gui-field-label">Where</span><span><span class="gui-nav">VPC <span>→</span> Virtual private gateways <span>→</span> Create virtual private gateway</span></span></div>
+        <div class="gui-field"><span class="gui-field-label">Name</span><span><code>netrust-prod-vgw</code></span></div>
+        <div class="gui-field"><span class="gui-field-label">ASN</span><span>Select <strong>Custom ASN</strong> → enter <code>64512</code> (or your chosen private ASN). The Amazon side ASN is what AWS advertises in BGP — can be custom for DX. Default is 64512.</span></div>
+        <div class="gui-field"><span class="gui-field-label">After creation</span><span>Select the VGW → Actions → Attach to VPC → select your VPC. Status changes from "detached" to "attached."</span></div>
+        <div class="gui-field"><span class="gui-field-label">Route propagation</span><span>Navigate to VPC → Route tables → select your private route table → Route propagation tab → Edit → enable for the VGW. Without this step, routes learned via BGP are not inserted into the route table and traffic won't flow.</span></div>
+        <div class="gui-field"><span class="gui-field-label">Why</span><span>Route propagation is the most commonly missed step. The VGW learns routes via BGP but they sit in the VGW's route database — only route propagation inserts them into the VPC route table for actual routing.</span></div>
+      </div>
+    </div>
+    <div class="gui-step">
+      <div class="gui-step-head"><div class="gui-step-num">2</div><div class="gui-step-title">Create the Customer Gateway</div></div>
+      <div class="gui-step-body">
+        <div class="gui-field"><span class="gui-field-label">Where</span><span><span class="gui-nav">VPC <span>→</span> Customer gateways <span>→</span> Create customer gateway</span></span></div>
+        <div class="gui-field"><span class="gui-field-label">Name</span><span><code>netrust-dc-primary-router</code></span></div>
+        <div class="gui-field"><span class="gui-field-label">BGP ASN</span><span><code>65000</code> — your on-prem router's BGP ASN. This is what your router will use in its OPEN message to AWS.</span></div>
+        <div class="gui-field"><span class="gui-field-label">IP address</span><span>Your on-prem router's public IP address. For the lab: use your home/office IP or a VyOS VM's elastic IP.</span></div>
+        <div class="gui-field"><span class="gui-field-label">Certificate ARN</span><span>For production: use AWS Certificate Manager private CA certificate for certificate-based auth instead of pre-shared key. More secure — no static secret to rotate.</span></div>
+        <div class="gui-field"><span class="gui-field-label">Why CGW</span><span>The Customer Gateway is AWS's representation of your device. It's a metadata object — changing the public IP or ASN here doesn't affect the physical device, it just tells AWS what to expect from the BGP peer.</span></div>
+      </div>
+    </div>
+    <div class="gui-step">
+      <div class="gui-step-head"><div class="gui-step-num">3</div><div class="gui-step-title">Create the VPN Connection</div></div>
+      <div class="gui-step-body">
+        <div class="gui-field"><span class="gui-field-label">Where</span><span><span class="gui-nav">VPC <span>→</span> Site-to-Site VPN connections <span>→</span> Create VPN connection</span></span></div>
+        <div class="gui-field"><span class="gui-field-label">Target gateway</span><span>Select <strong>Virtual private gateway</strong> → select <code>netrust-prod-vgw</code>. (Alternatively: Transit gateway — if using TGW as hub. Preferred for multi-VPC environments.)</span></div>
+        <div class="gui-field"><span class="gui-field-label">Customer gateway</span><span>Select <strong>Existing</strong> → select <code>netrust-dc-primary-router</code></span></div>
+        <div class="gui-field"><span class="gui-field-label">Routing</span><span>Select <strong>Dynamic (requires BGP)</strong>. Static is simpler but loses automatic failover between tunnels — always use BGP for production.</span></div>
+        <div class="gui-field"><span class="gui-field-label">Tunnel options</span><span>Expand <strong>Tunnel 1 options</strong>: set Inside IPv4 CIDR to <code>169.254.10.0/30</code> (link-local range for BGP peering inside the tunnel). Set a pre-shared key or leave blank for auto-generation. Repeat for Tunnel 2 with <code>169.254.11.0/30</code>.</span></div>
+        <div class="gui-field"><span class="gui-field-label">IKE version</span><span>Select <strong>IKEv2</strong> — more secure and efficient than IKEv1. Only use IKEv1 if your device doesn't support v2.</span></div>
+        <div class="gui-field"><span class="gui-field-label">Visual cue</span><span>After creation (~2 min), the VPN connection shows Status: "Pending." Two tunnels appear — Tunnel 1 and Tunnel 2 with different Outside IP addresses (these are the AWS endpoint IPs your router connects to). Download the configuration file for your router type.</span></div>
+      </div>
+    </div>
+    <div class="gui-step">
+      <div class="gui-step-head"><div class="gui-step-num">4</div><div class="gui-step-title">Download and Apply the Router Configuration</div></div>
+      <div class="gui-step-body">
+        <div class="gui-field"><span class="gui-field-label">Where</span><span><span class="gui-nav">Site-to-Site VPN connections <span>→</span> select your VPN <span>→</span> Download configuration</span></span></div>
+        <div class="gui-field"><span class="gui-field-label">Vendor</span><span>Select your router vendor (Cisco, Juniper, Palo Alto, Fortinet, Generic). For the lab: select Generic or Openswan/StrongSwan for a Linux-based VyOS setup.</span></div>
+        <div class="gui-field"><span class="gui-field-label">What you get</span><span>A complete router configuration file with: outside IP addresses, inside tunnel IPs, pre-shared keys, IKE phase 1/2 settings, BGP neighbor configuration. Copy this verbatim to your router.</span></div>
+        <div class="gui-field"><span class="gui-field-label">Apply to router</span><span>Apply the downloaded configuration to your on-prem/lab router. Both tunnels should initiate. Status in the console changes from "Down" to "Up" per tunnel.</span></div>
+        <div class="gui-field"><span class="gui-field-label">Visual cue</span><span>After both tunnels are up: the VPN connection shows two green "Up" indicators. BGP peers show "Established." Your on-prem router's BGP table shows VPC CIDR routes from AWS. The VPC route table shows your on-prem prefixes from the propagated VGW.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="checkpoint"><strong>✅ Checkpoint A:</strong> VPN connection shows both tunnels UP. BGP state = Established on both peers. From the VPC, you can ping an on-prem host. From on-prem, you can reach an EC2 instance in the VPC via private IP. Route propagation shows on-prem prefixes in the VPC route table.</div>
+
+  <h3>Part B: Direct Connect — Console Walkthrough (Physical Not Required for Lab)</h3>
+  <div class="gui-steps">
+    <div class="gui-step">
+      <div class="gui-step-head"><div class="gui-step-num">5</div><div class="gui-step-title">Request a Dedicated Connection</div></div>
+      <div class="gui-step-body">
+        <div class="gui-field"><span class="gui-field-label">Where</span><span><span class="gui-nav">Direct Connect <span>→</span> Connections <span>→</span> Create connection</span></span></div>
+        <div class="gui-field"><span class="gui-field-label">Connection type</span><span>Select <strong>Dedicated connection</strong> (1/10/100 Gbps, ordered directly from AWS) or <strong>Hosted connection</strong> (ordered through an APN Partner — available in 50 Mbps to 10 Gbps).</span></div>
+        <div class="gui-field"><span class="gui-field-label">Location</span><span>Select the DX location nearest to your on-premises. For Singapore: <strong>Equinix SG1</strong> (Tai Seng) or <strong>Equinix SG2</strong> (Jurong East). Check which facility you already have presence in or can co-locate at.</span></div>
+        <div class="gui-field"><span class="gui-field-label">Port speed</span><span>For production FSI: <strong>10 Gbps</strong> minimum for any high-throughput workload. For dev/connectivity testing: 1 Gbps. For the lab (if using Hosted): 50 Mbps is sufficient to test the BGP and VIF concepts.</span></div>
+        <div class="gui-field"><span class="gui-field-label">After submitting</span><span>AWS creates the connection in "Requested" state. AWS then provisions the port — typically 3–5 business days for a Dedicated Connection. You receive an LOA-CFA (Letter of Authorization - Connecting Facility Assignment) PDF via email.</span></div>
+        <div class="gui-field"><span class="gui-field-label">LOA-CFA</span><span>This document authorises the DX location to run a cross-connect from your cage/cabinet to AWS's cage. Submit it to the facility's remote hands team. Physical connection: 1–5 business days after LOA submission.</span></div>
+        <div class="gui-field"><span class="gui-field-label">Visual cue</span><span>Connection status: Requested → Pending → Available. "Available" means the physical link is up and the port is ready for VIF creation. You are NOT yet paying the port fee at "Requested" — billing starts at "Available."</span></div>
+      </div>
+    </div>
+    <div class="gui-step">
+      <div class="gui-step-head"><div class="gui-step-num">6</div><div class="gui-step-title">Create a Private Virtual Interface (VIF)</div></div>
+      <div class="gui-step-body">
+        <div class="gui-field"><span class="gui-field-label">Where</span><span><span class="gui-nav">Direct Connect <span>→</span> Connections <span>→</span> select connection <span>→</span> Create virtual interface</span></span></div>
+        <div class="gui-field"><span class="gui-field-label">VIF type</span><span>Select <strong>Private</strong> for single-VPC access, <strong>Transit</strong> for TGW integration. For the initial lab, Private VIF is simpler to test.</span></div>
+        <div class="gui-field"><span class="gui-field-label">VIF name</span><span><code>netrust-prod-private-vif</code></span></div>
+        <div class="gui-field"><span class="gui-field-label">Gateway</span><span>Select <strong>Virtual private gateway</strong> → <code>netrust-prod-vgw</code> (created in Step 1). The VIF will attach to this VGW.</span></div>
+        <div class="gui-field"><span class="gui-field-label">VLAN ID</span><span>Enter a VLAN ID (e.g., <code>100</code>) — this is the 802.1Q tag used on the trunk between your router and the DX port. Must match the VLAN you configure on your router's sub-interface.</span></div>
+        <div class="gui-field"><span class="gui-field-label">BGP ASN</span><span>Your on-prem router's BGP ASN: <code>65000</code></span></div>
+        <div class="gui-field"><span class="gui-field-label">Amazon router IP</span><span>Enter or auto-assign a /30 from 169.254.x.x for the BGP peering link. Example: <code>169.254.1.1/30</code> (AWS side) — your router gets <code>169.254.1.2/30</code>.</span></div>
+        <div class="gui-field"><span class="gui-field-label">Customer router IP</span><span><code>169.254.1.2/30</code> — configure this on your router's sub-interface for the VLAN.</span></div>
+        <div class="gui-field"><span class="gui-field-label">BGP auth key</span><span>Optional MD5 authentication key for BGP session. Recommended for production.</span></div>
+        <div class="gui-field"><span class="gui-field-label">Enable BFD</span><span>✅ Enable Jumbo frames and BFD — BFD provides sub-second failure detection. Set BFD min interval to 300ms, multiplier to 3 (900ms total detect time).</span></div>
+        <div class="gui-field"><span class="gui-field-label">Visual cue</span><span>After creation, VIF shows "Pending" then "Available." After you configure your router's sub-interface and BGP peer: VIF BGP state changes from "Down" to "Up." Route table in VPC shows on-prem prefixes from the VGW propagation.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="checkpoint"><strong>✅ Checkpoint B:</strong> DX Console → Virtual interfaces → your VIF shows State: Available, BGP Status: Up. VPC route table shows your on-prem CIDR(s) via the VGW. Ping test from on-prem to VPC instance succeeds with consistent ~3–5 ms latency (vs ~10–20 ms over VPN backup).</div>
+
+  <h3>Part C: Direct Connect Gateway + Transit VIF</h3>
+  <div class="gui-steps">
+    <div class="gui-step">
+      <div class="gui-step-head"><div class="gui-step-num">7</div><div class="gui-step-title">Create a Direct Connect Gateway</div></div>
+      <div class="gui-step-body">
+        <div class="gui-field"><span class="gui-field-label">Where</span><span><span class="gui-nav">Direct Connect <span>→</span> Direct Connect gateways <span>→</span> Create Direct Connect gateway</span></span></div>
+        <div class="gui-field"><span class="gui-field-label">Name</span><span><code>netrust-dxgw-global</code></span></div>
+        <div class="gui-field"><span class="gui-field-label">Amazon side ASN</span><span><code>64512</code> (or your custom private ASN — must be different from your on-prem ASN and different from VGW/TGW ASNs)</span></div>
+        <div class="gui-field"><span class="gui-field-label">Why global</span><span>The DX Gateway is a global resource — it has no home region. You attach VGWs from any region to it. One DX connection + DXGW = connectivity to any AWS region worldwide. This is the design advantage over a Private VIF attached directly to a VGW (region-specific).</span></div>
+        <div class="gui-field"><span class="gui-field-label">Visual cue</span><span>DX Gateway appears in the list with no region column — it's global. Notice it has no VPC attachment yet — attachments are VGWs or TGWs, not VPCs directly.</span></div>
+      </div>
+    </div>
+    <div class="gui-step">
+      <div class="gui-step-head"><div class="gui-step-num">8</div><div class="gui-step-title">Attach VGW(s) to the DX Gateway</div></div>
+      <div class="gui-step-body">
+        <div class="gui-field"><span class="gui-field-label">Where</span><span><span class="gui-nav">Direct Connect <span>→</span> Direct Connect gateways <span>→</span> select gateway <span>→</span> Gateway associations <span>→</span> Associate gateway</span></span></div>
+        <div class="gui-field"><span class="gui-field-label">Type</span><span><strong>Virtual private gateway</strong> (for single VPC) or <strong>Transit gateway</strong> (for multi-VPC scale — preferred)</span></div>
+        <div class="gui-field"><span class="gui-field-label">Allowed prefixes</span><span>Enter the on-prem CIDR ranges that should be allowed to reach this VPC via the DXGW: e.g., <code>10.100.0.0/16</code>. This is a whitelist — only specified prefixes can traverse the DXGW.</span></div>
+        <div class="gui-field"><span class="gui-field-label">Visual cue</span><span>Association shows State: "Associating" → "Associated." You can associate multiple VGWs from different regions to the same DXGW.</span></div>
+      </div>
+    </div>
+    <div class="gui-step">
+      <div class="gui-step-head"><div class="gui-step-num">9</div><div class="gui-step-title">Create a Transit VIF pointing to DX Gateway</div></div>
+      <div class="gui-step-body">
+        <div class="gui-field"><span class="gui-field-label">Where</span><span><span class="gui-nav">Direct Connect <span>→</span> Connections <span>→</span> select connection <span>→</span> Create virtual interface → Transit</span></span></div>
+        <div class="gui-field"><span class="gui-field-label">Gateway</span><span>Select <strong>Direct Connect gateway</strong> → <code>netrust-dxgw-global</code></span></div>
+        <div class="gui-field"><span class="gui-field-label">VLAN</span><span><code>200</code> (different VLAN from the Private VIF if both exist on the same connection)</span></div>
+        <div class="gui-field"><span class="gui-field-label">BGP ASN</span><span><code>65000</code> (same on-prem ASN)</span></div>
+        <div class="gui-field"><span class="gui-field-label">Why Transit VIF scales</span><span>The Transit VIF connects to the DX Gateway, which connects to TGW. TGW serves all attached VPCs. Adding a new VPC: attach it to TGW → done. No new VIF, no new BGP session on your router, no changes on the physical connection.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="checkpoint"><strong>✅ Checkpoint C:</strong> DX Gateway shows State: Available with VGW/TGW associations listed. Transit VIF shows BGP: Up. From on-prem, you can reach resources in all VPCs attached to the TGW through a single BGP session. Verify: <code>aws directconnect describe-direct-connect-gateways</code> — shows State: available, attached gateways.</div>
+
+  <details class="tf-block">
+    <summary>🧭 Terraform Rosetta Stone — DX Gateway + Transit VIF <span class="tf-badge">HCL Reference</span></summary>
+    <div class="code-wrap"><div class="code-header"><span class="code-lang">HCL — dx_gateway.tf</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm"># Direct Connect Gateway — global resource</span>
+<span class="kw">resource</span> <span class="str">"aws_dx_gateway"</span> <span class="str">"main"</span> {
+  name            = <span class="str">"netrust-dxgw-global"</span>
+  amazon_side_asn = <span class="str">"64512"</span>   <span class="cm"># Must be a string in Terraform</span>
+}
+
+<span class="cm"># Attach Transit Gateway to DX Gateway</span>
+<span class="kw">resource</span> <span class="str">"aws_dx_gateway_association"</span> <span class="str">"tgw"</span> {
+  dx_gateway_id         = <span class="kw">aws_dx_gateway</span>.main.id
+  associated_gateway_id = <span class="kw">aws_ec2_transit_gateway</span>.main.id
+
+  <span class="cm"># Allowed prefixes: on-prem CIDRs that can reach AWS through this association</span>
+  allowed_prefixes = [
+    <span class="str">"10.100.0.0/16"</span>,   <span class="cm"># Corporate HQ subnet</span>
+    <span class="str">"10.101.0.0/16"</span>,   <span class="cm"># DR site subnet</span>
+  ]
+}
+
+<span class="cm"># Transit VIF — logical interface on the physical DX connection</span>
+<span class="cm"># NOTE: The physical connection ID comes from the DX partner/console</span>
+<span class="cm"># It cannot be created by Terraform — only the VIF is created here</span>
+<span class="kw">resource</span> <span class="str">"aws_dx_transit_virtual_interface"</span> <span class="str">"main"</span> {
+  connection_id    = <span class="kw">var</span>.dx_connection_id   <span class="cm"># Physical connection ID from DX console</span>
+  name             = <span class="str">"netrust-transit-vif"</span>
+  vlan             = <span class="nm">200</span>
+  address_family   = <span class="str">"ipv4"</span>
+  bgp_asn          = <span class="nm">65000</span>               <span class="cm"># Your on-prem ASN</span>
+  amazon_address   = <span class="str">"169.254.2.1/30"</span>   <span class="cm"># AWS BGP peer IP</span>
+  customer_address = <span class="str">"169.254.2.2/30"</span>   <span class="cm"># Your router BGP peer IP</span>
+  dx_gateway_id    = <span class="kw">aws_dx_gateway</span>.main.id
+  bgp_auth_key     = <span class="kw">var</span>.dx_bgp_auth_key  <span class="cm"># Store in Secrets Manager</span>
+
+  <span class="cm"># Enable Jumbo frames for max throughput (9001 MTU)</span>
+  mtu = <span class="nm">9001</span>
+}
+
+<span class="cm"># Site-to-Site VPN as backup (same TGW attachment)</span>
+<span class="kw">resource</span> <span class="str">"aws_vpn_connection"</span> <span class="str">"backup"</span> {
+  transit_gateway_id  = <span class="kw">aws_ec2_transit_gateway</span>.main.id  <span class="cm"># Attach to TGW, not VGW</span>
+  customer_gateway_id = <span class="kw">aws_customer_gateway</span>.onprem.id
+  type                = <span class="str">"ipsec.1"</span>
+  static_routes_only  = <span class="kw">false</span>
+  tags = { Name = <span class="str">"netrust-vpn-tgw-backup"</span> }
+}</pre>
+    </div></details>
+
+  <div class="callout career">
+    <div class="ct">💼 Career Application</div>
+    <p>In FSI cloud architect interviews, the hybrid connectivity question always comes up: "Design the network connectivity from our Singapore data centre to AWS." The complete answer has four components: (1) DX Dedicated or Hosted Connection to Equinix SG1/SG2, (2) Transit VIF → DX Gateway → TGW for multi-VPC scalability, (3) Site-to-Site VPN backup with BGP failover using BFD, and (4) route traffic engineering (LOCAL_PREF on your side to prefer DX over VPN, MED to prefer the correct DX location if you have two). Candidates who can draw this architecture and explain each component — including why Transit VIF scales better than multiple Private VIFs — are in the top tier of responses for senior roles.</p>
+  </div>
+</section>
+
+<!-- S06 -->
+<section class="section-block" id="s06">
+  <div class="section-label"><span class="num">06</span> / CLI VERIFICATION</div>
+  <h2 class="section-title">CLI Verification Reference <a class="anchor" href="#s06">#</a></h2>
+
+  <div class="code-wrap"><div class="code-header"><span class="code-lang">bash — Direct Connect verification</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <pre><span class="cm"># List all DX connections and their status</span>
+aws directconnect describe-connections \
+  --query <span class="str">'connections[*].{Name:connectionName,State:connectionState,Bandwidth:bandwidth,Location:location}'</span> \
+  --output table
+
+<span class="cm"># List Virtual Interfaces and BGP status</span>
+aws directconnect describe-virtual-interfaces \
+  --query <span class="str">'virtualInterfaces[*].{Name:virtualInterfaceName,Type:virtualInterfaceType,State:virtualInterfaceState,BGP:bgpPeers[0].bgpStatus,VLAN:vlan}'</span> \
+  --output table
+
+<span class="cm"># Describe a specific VIF in detail (BGP peers, routes)</span>
+VIF_ID="dxvif-xxxxxxxxxxxx"
+aws directconnect describe-virtual-interfaces \
+  --virtual-interface-id $VIF_ID
+
+<span class="cm"># List DX Gateways</span>
+aws directconnect describe-direct-connect-gateways \
+  --query <span class="str">'directConnectGateways[*].{Name:directConnectGatewayName,State:directConnectGatewayState,ASN:amazonSideAsn}'</span> \
+  --output table
+
+<span class="cm"># List DX Gateway associations (attached VGWs/TGWs)</span>
+aws directconnect describe-direct-connect-gateway-associations \
+  --direct-connect-gateway-id dxgw-xxxxxxxxxxxx \
+  --query <span class="str">'directConnectGatewayAssociations[*].{GW:associatedGateway.id,State:associationState,Prefixes:allowedPrefixesToDirectConnectGateway}'</span></pre>
+  </div>
+
+  <div class="code-wrap"><div class="code-header"><span class="code-lang">bash — Site-to-Site VPN verification</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <pre><span class="cm"># List VPN connections and tunnel status</span>
+aws ec2 describe-vpn-connections \
+  --query <span class="str">'VpnConnections[*].{ID:VpnConnectionId,State:State,CGW:CustomerGatewayId,VGW:VpnGatewayId,Tunnel1:VgwTelemetry[0].Status,Tunnel2:VgwTelemetry[1].Status}'</span> \
+  --output table
+
+<span class="cm"># Detailed tunnel telemetry (BGP routes accepted)</span>
+aws ec2 describe-vpn-connections \
+  --query <span class="str">'VpnConnections[*].VgwTelemetry[*].{OutsideIP:OutsideIpAddress,Status:Status,State:StatusMessage,Routes:AcceptedRouteCount,LastChange:LastStatusChange}'</span>
+
+<span class="cm"># Check Customer Gateways</span>
+aws ec2 describe-customer-gateways \
+  --query <span class="str">'CustomerGateways[*].{Name:Tags[?Key==`Name`].Value|[0],IP:IpAddress,ASN:BgpAsn,State:State}'</span> \
+  --output table
+
+<span class="cm"># Check route propagation in a route table</span>
+RT_ID="rtb-xxxxxxxxxxxx"
+aws ec2 describe-route-tables --route-table-ids $RT_ID \
+  --query <span class="str">'RouteTables[*].PropagatingVgws'</span>
+<span class="cm"># Should return your VGW ID. Empty array [] = propagation not enabled = routes not in table</span>
+
+<span class="cm"># See propagated routes in a route table</span>
+aws ec2 describe-route-tables --route-table-ids $RT_ID \
+  --query <span class="str">'RouteTables[*].Routes[?Origin==`EnableVgwRoutePropagation`]'</span></pre>
+  </div>
+</section>
+
+<!-- S07 -->
+<section class="section-block" id="s07">
+  <div class="section-label"><span class="num">07</span> / HARDENING</div>
+  <h2 class="section-title">Configuration Reference &amp; Hardening <a class="anchor" href="#s07">#</a></h2>
+
+  <h3>DX Hardening — Three-Column Reference</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Setting</th><th>Default</th><th>Production-Hardened</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Redundancy</td><td>Single DX connection</td><td>Dual DX (different locations) + VPN backup</td><td>Single DX = single point of failure. MAS TRM §14 BCM requires resilient connectivity for critical systems.</td></tr>
+      <tr><td>BFD</td><td>Disabled</td><td>✅ Enabled, min interval 300ms, multiplier 3</td><td>BGP holddown timer default = 90 seconds. BFD detects failure in &lt;1 second. Critical for sub-second DX→VPN failover.</td></tr>
+      <tr><td>MTU</td><td>1500 bytes</td><td>9001 bytes (Jumbo frames)</td><td>Jumbo frames increase throughput for large data transfers (S3 sync, bulk DB transfers). Requires end-to-end support on your network.</td></tr>
+      <tr><td>MACsec</td><td>Disabled</td><td>✅ Enabled on Dedicated 10/100 Gbps connections</td><td>Layer 2 encryption between your router and AWS DX router. Satisfies MAS TRM §11.3 encryption in transit. Wire-speed, no performance penalty.</td></tr>
+      <tr><td>BGP auth</td><td>None</td><td>MD5 authentication key on all BGP sessions</td><td>Prevents BGP session hijacking. A spoofed BGP peer could inject false routes. Low overhead, high security value.</td></tr>
+      <tr><td>Allowed prefixes (DXGW)</td><td>Must specify</td><td>Minimum set of on-prem CIDRs; never use 0.0.0.0/0</td><td>Overly broad allowed prefixes risk routing unintended traffic through the DXGW. Be specific.</td></tr>
+      <tr><td>Private VIF vs Transit VIF</td><td>Often Private VIF (simpler)</td><td>Transit VIF → DXGW → TGW for any multi-VPC deployment</td><td>Private VIF per VPC doesn't scale. Migrate to Transit VIF early.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>VPN Hardening</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Setting</th><th>Default</th><th>Production-Hardened</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>IKE version</td><td>IKEv1 or IKEv2</td><td>IKEv2 only</td><td>IKEv2 is more secure, more efficient, better NAT traversal. Only use IKEv1 if device doesn't support v2.</td></tr>
+      <tr><td>Authentication</td><td>Pre-shared key</td><td>Certificate-based (ACM Private CA)</td><td>PSKs are static and must be rotated manually. Certificates auto-renew and provide stronger auth.</td></tr>
+      <tr><td>Encryption</td><td>AES-128</td><td>AES-256-GCM</td><td>AES-256 provides stronger encryption. GCM mode provides authenticated encryption (no separate HMAC needed).</td></tr>
+      <tr><td>DPD (Dead Peer Detection)</td><td>Enabled (AWS default)</td><td>✅ Enabled, action: restart</td><td>DPD detects peer failure and restarts the tunnel. Without it, a "zombie" tunnel may exist without carrying traffic.</td></tr>
+      <tr><td>Tunnel redundancy</td><td>2 tunnels (always)</td><td>Both tunnels active (ECMP) or Active/Standby with monitoring</td><td>AWS always provides 2 tunnels to different AZs. Use ECMP for load balancing or ensure your router monitors both.</td></tr>
+      <tr><td>Routing</td><td>Static or BGP</td><td>BGP always for production</td><td>BGP enables automatic failover between tunnels and between DX+VPN. Static routes require manual intervention for failover.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>BGP Traffic Engineering — The Three Levers</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Attribute</th><th>Where Applied</th><th>Effect</th><th>Use Case</th></tr></thead>
+    <tbody>
+      <tr><td><strong>LOCAL_PREF</strong></td><td>Your router (outbound routing decision)</td><td>Higher value = preferred path for traffic leaving on-prem to AWS</td><td>Set LOCAL_PREF 200 for DX routes, 100 for VPN routes → on-prem traffic prefers DX</td></tr>
+      <tr><td><strong>MED (Multi-Exit Discriminator)</strong></td><td>Advertised to AWS (inbound routing suggestion)</td><td>Lower value = preferred entry point; suggests to AWS which path to use for traffic coming to you</td><td>When you have two DX connections, set lower MED on the preferred one → AWS traffic enters via preferred DX</td></tr>
+      <tr><td><strong>AS_PATH Prepending</strong></td><td>Advertised to AWS (makes path look longer)</td><td>Longer AS_PATH = less preferred by AWS when choosing between multiple paths</td><td>Prepend your ASN multiple times on the VPN backup path → AWS prefers DX for return traffic</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout protip">
+    <div class="ct">💡 The Asymmetric Routing Problem</div>
+    <p>A common production issue: on-prem traffic goes out via DX (preferred by LOCAL_PREF) but return traffic from AWS comes back via VPN (AWS doesn't know to prefer DX without MED or AS_PATH guidance). This creates asymmetric routing — stateful firewalls drop the return traffic as "unsolicited." Fix: use MED to guide AWS return traffic to the DX path. Set MED=100 on DX BGP advertisements, MED=200 on VPN BGP advertisements. AWS uses MED as a hint to prefer the lower value — traffic in both directions now follows DX.</p>
+  </div>
+
+  <h3>MAS TRM 2021 — Guide 07 Mapping</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>MAS TRM</th><th>Requirement</th><th>Technical Control</th></tr></thead>
+    <tbody>
+      <tr><td>§11.1</td><td>Private connectivity to cloud providers</td><td>Direct Connect provides dedicated private circuit. Traffic never traverses the public internet.</td></tr>
+      <tr><td>§11.3.2</td><td>Encryption in transit for sensitive data</td><td>MACsec (Layer 2) on DX Dedicated Connections. IPSec (Layer 3) on VPN backup. Either satisfies encryption in transit.</td></tr>
+      <tr><td>§14.1</td><td>BCM — resilient connectivity for critical systems</td><td>Dual DX (diverse locations) + VPN backup. BFD for fast failover. &lt;5 second RTO for connectivity restoration.</td></tr>
+      <tr><td>§14.2</td><td>DR testing — connectivity failover tested periodically</td><td>Annual DX failover test: disable DX BGP session → verify VPN takes over automatically → verify application continuity.</td></tr>
+      <tr><td>§7.2</td><td>Network segmentation — isolate production from non-production</td><td>Separate Private VIFs or Transit VIF route tables for prod vs non-prod traffic. TGW route table isolation between prod and non-prod VPCs.</td></tr>
+    </tbody>
+  </table></div>
+
+  <details class="tf-block">
+    <summary>🧭 Terraform Rosetta Stone — Full DX + VPN Configuration <span class="tf-badge">HCL Reference</span></summary>
+    <div class="code-wrap"><div class="code-header"><span class="code-lang">HCL — dx_vpn_hardened.tf</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm"># Hardened VPN connection with IKEv2 + AES-256</span>
+<span class="kw">resource</span> <span class="str">"aws_vpn_connection"</span> <span class="str">"backup"</span> {
+  transit_gateway_id  = <span class="kw">aws_ec2_transit_gateway</span>.main.id
+  customer_gateway_id = <span class="kw">aws_customer_gateway</span>.onprem.id
+  type                = <span class="str">"ipsec.1"</span>
+  static_routes_only  = <span class="kw">false</span>   <span class="cm"># BGP</span>
+
+  <span class="cm"># Tunnel 1 — hardened IKEv2 + AES256-GCM</span>
+  tunnel1_inside_cidr                  = <span class="str">"169.254.10.0/30"</span>
+  tunnel1_preshared_key                = <span class="kw">var</span>.vpn_psk_1
+  tunnel1_ike_versions                 = [<span class="str">"ikev2"</span>]
+  tunnel1_phase1_encryption_algorithms = [<span class="str">"AES256"</span>]
+  tunnel1_phase1_integrity_algorithms  = [<span class="str">"SHA2-256"</span>]
+  tunnel1_phase1_dh_group_numbers      = [<span class="nm">20</span>]   <span class="cm"># ECP384 — strong DH group</span>
+  tunnel1_phase2_encryption_algorithms = [<span class="str">"AES256GCM16"</span>]
+  tunnel1_phase2_integrity_algorithms  = [<span class="str">"SHA2-256"</span>]
+  tunnel1_phase2_dh_group_numbers      = [<span class="nm">20</span>]
+  tunnel1_dpd_timeout_action           = <span class="str">"restart"</span>
+  tunnel1_startup_action               = <span class="str">"start"</span>   <span class="cm"># AWS initiates the tunnel</span>
+
+  <span class="cm"># Tunnel 2 — same settings, different AZ</span>
+  tunnel2_inside_cidr                  = <span class="str">"169.254.11.0/30"</span>
+  tunnel2_preshared_key                = <span class="kw">var</span>.vpn_psk_2
+  tunnel2_ike_versions                 = [<span class="str">"ikev2"</span>]
+  tunnel2_phase1_encryption_algorithms = [<span class="str">"AES256"</span>]
+  tunnel2_phase1_integrity_algorithms  = [<span class="str">"SHA2-256"</span>]
+  tunnel2_phase1_dh_group_numbers      = [<span class="nm">20</span>]
+  tunnel2_phase2_encryption_algorithms = [<span class="str">"AES256GCM16"</span>]
+  tunnel2_phase2_integrity_algorithms  = [<span class="str">"SHA2-256"</span>]
+  tunnel2_phase2_dh_group_numbers      = [<span class="nm">20</span>]
+  tunnel2_dpd_timeout_action           = <span class="str">"restart"</span>
+  tunnel2_startup_action               = <span class="str">"start"</span>
+
+  tags = { Name = <span class="str">"netrust-vpn-backup-hardened"</span> }
+}
+
+<span class="cm"># LAG (Link Aggregation Group) for redundant DX</span>
+<span class="kw">resource</span> <span class="str">"aws_dx_lag"</span> <span class="str">"primary"</span> {
+  name                  = <span class="str">"netrust-dx-lag-10g"</span>
+  connections_bandwidth = <span class="str">"10Gbps"</span>
+  location              = <span class="str">"EqSG1"</span>   <span class="cm"># Equinix SG1</span>
+  force_destroy         = <span class="kw">false</span>   <span class="cm"># Don't delete if connections exist</span>
+  tags = { Name = <span class="str">"netrust-dx-lag"</span> }
+}
+
+<span class="cm"># CloudWatch alarm for DX connection state change</span>
+<span class="kw">resource</span> <span class="str">"aws_cloudwatch_metric_alarm"</span> <span class="str">"dx_down"</span> {
+  alarm_name          = <span class="str">"DX-Connection-Down"</span>
+  comparison_operator = <span class="str">"LessThanThreshold"</span>
+  evaluation_periods  = <span class="nm">1</span>
+  metric_name         = <span class="str">"ConnectionState"</span>
+  namespace           = <span class="str">"AWS/DX"</span>
+  period              = <span class="nm">60</span>
+  statistic           = <span class="str">"Minimum"</span>
+  threshold           = <span class="nm">1</span>   <span class="cm"># 0 = down, 1 = up</span>
+  dimensions          = { ConnectionId = <span class="kw">var</span>.dx_connection_id }
+  alarm_actions       = [<span class="kw">aws_sns_topic</span>.network_alerts.arn]
+  alarm_description   = <span class="str">"DX connection went down — VPN backup should be active"</span>
+}</pre>
+    </div></details>
+</section>
+
+<!-- S08 -->
+<section class="section-block" id="s08">
+  <div class="section-label"><span class="num">08</span> / LIVE SESSION</div>
+  <h2 class="section-title">Live Session Walkthrough <a class="anchor" href="#s08">#</a></h2>
+  <p>Scenario: 3am PagerDuty alert — "AWS connectivity lost from DC." Your DX connection dropped. Walk through the diagnosis and verify VPN backup took over.</p>
+
+  <h3>Step 1 — Verify What Happened</h3>
+  <div class="code-wrap"><div class="code-header"><span class="code-lang">bash — Emergency connectivity diagnosis</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <pre><span class="cm"># Check DX connection state</span>
+aws directconnect describe-connections \
+  --query <span class="str">'connections[*].{Name:connectionName,State:connectionState}'</span>
+<span class="cm"># connectionState: "down" confirms DX physical failure</span>
+
+<span class="cm"># Check VIF BGP status</span>
+aws directconnect describe-virtual-interfaces \
+  --query <span class="str">'virtualInterfaces[*].{Name:virtualInterfaceName,BGP:bgpPeers[0].bgpStatus}'</span>
+<span class="cm"># bgpStatus: "down" — BGP went down with the physical connection</span>
+
+<span class="cm"># Verify VPN backup took over</span>
+aws ec2 describe-vpn-connections \
+  --query <span class="str">'VpnConnections[*].VgwTelemetry[*].{IP:OutsideIpAddress,Status:Status,Routes:AcceptedRouteCount}'</span>
+<span class="cm"># Status: "UP", AcceptedRouteCount &gt; 0 = VPN backup is active</span>
+
+<span class="cm"># Check VPC route table — should now show on-prem routes via VPN (same VGW, different path)</span>
+aws ec2 describe-route-tables --route-table-ids rtb-xxxx \
+  --query <span class="str">'RouteTables[*].Routes[?Origin==`EnableVgwRoutePropagation`].[DestinationCidrBlock,State]'</span></pre>
+  </div>
+
+  <h3>Step 2 — The Deliberate Misconfiguration: BFD Not Enabled</h3>
+  <p>You discover BFD was never enabled on the DX VIF. BGP holddown timer was at default 90 seconds. It took 90 seconds after DX failure for BGP to declare the DX peer down and withdraw routes — during which traffic was blackholed. VPN routes only became active after BGP converged.</p>
+  <p><strong>Impact:</strong> 90-second connectivity outage instead of the &lt;1 second that BFD would have provided. For a payments system processing real-time transactions, this was a material incident.</p>
+
+  <h3>Step 3 — Fix: Enable BFD on the VIF</h3>
+  <div class="code-wrap"><div class="code-header"><span class="code-lang">bash — Enable BFD (requires brief BGP session restart)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <pre><span class="cm"># BFD must be enabled on both the AWS VIF AND your router</span>
+<span class="cm"># On AWS side — check current BFD status</span>
+aws directconnect describe-virtual-interfaces \
+  --virtual-interface-id dxvif-xxxx \
+  --query <span class="str">'virtualInterfaces[*].{BFD:awsDeviceName}'</span>
+
+<span class="cm"># BFD is enabled when creating the VIF in the console (checkbox)</span>
+<span class="cm"># For an existing VIF, you must delete and recreate it — there's no update API for BFD</span>
+<span class="cm"># Plan a maintenance window for the VIF recreation</span>
+
+<span class="cm"># On your router (Cisco IOS-XE example):</span>
+<span class="cm"># interface GigabitEthernet0.100</span>
+<span class="cm">#  bfd interval 300 min_rx 300 multiplier 3</span>
+<span class="cm"># router bgp 65000</span>
+<span class="cm">#  neighbor 169.254.1.1 fall-over bfd</span>
+
+<span class="cm"># After BFD is active, test failover:</span>
+<span class="cm"># Shut down the DX-facing interface on your router</span>
+<span class="cm"># BFD detects within 900ms (300ms × 3)</span>
+<span class="cm"># BGP withdraws DX routes, VPN routes take over</span>
+<span class="cm"># Restore interface → BFD detects within 900ms → DX BGP re-establishes → routes restored</span></pre>
+  </div>
+
+  <h3>Step 4 — Verify Failover Duration After BFD Fix</h3>
+  <p>After enabling BFD on both AWS VIF and your router, test the failover time. Methodology: run a continuous ping from on-prem to an EC2 instance in the VPC. Simulate DX failure by shutting the DX-facing router interface. Count ping drops — with BFD properly configured, you should see 1–3 dropped pings (900ms to 3 seconds) versus 30+ pings (90 seconds) without BFD. Document this test result as DX failover DR evidence for MAS TRM §14.2.</p>
+
+  <div class="callout success">
+    <div class="ct">✅ Key Lesson</div>
+    <p>BFD is the single most important DX configuration item for operational resilience. Without it, a DX failure causes a 90-second connectivity outage — the BGP holddown default. With BFD enabled at 300ms interval × 3 multiplier, the same failure causes less than 1-second outage. This is the difference between a P2 incident and a P1 incident in a payments environment. Enable BFD on every DX VIF, document the failover time, and test it annually per MAS TRM §14.2.</p>
+  </div>
+</section>
+
+<!-- S09 -->
+<section class="section-block" id="s09">
+  <div class="section-label"><span class="num">09</span> / TROUBLESHOOTING</div>
+  <h2 class="section-title">Troubleshooting &amp; Failure Modes <a class="anchor" href="#s09">#</a></h2>
+
+  <h3>Debug Runbook — First 5 Checks</h3>
+  <div class="code-wrap"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <pre><span class="cm"># 1. DX physical connection state</span>
+aws directconnect describe-connections \
+  --query <span class="str">'connections[*].{Name:connectionName,State:connectionState}'</span>
+<span class="cm"># "available" = physical up. "down" = physical failure at DX location</span>
+
+<span class="cm"># 2. VIF BGP state</span>
+aws directconnect describe-virtual-interfaces \
+  --query <span class="str">'virtualInterfaces[*].{VIF:virtualInterfaceName,BGP:bgpPeers[0].bgpStatus,State:virtualInterfaceState}'</span>
+<span class="cm"># bgpStatus "up" = BGP session established and routes exchanged</span>
+
+<span class="cm"># 3. VPN tunnel status (is backup active?)</span>
+aws ec2 describe-vpn-connections \
+  --query <span class="str">'VpnConnections[*].VgwTelemetry[*].{Status:Status,Routes:AcceptedRouteCount,LastChange:LastStatusChange}'</span>
+
+<span class="cm"># 4. Route propagation in VPC route table</span>
+aws ec2 describe-route-tables \
+  --query <span class="str">'RouteTables[?PropagatingVgws != `[]`].{RT:RouteTableId,VGW:PropagatingVgws[0].GatewayId,Routes:Routes[?Origin==`EnableVgwRoutePropagation`]|length(@)}'</span>
+<span class="cm"># Routes count = 0 with propagation enabled = VGW has no routes (BGP not up)</span>
+
+<span class="cm"># 5. Verify traffic path from AWS side</span>
+<span class="cm"># Launch a test EC2 instance in the VPC, check routing with traceroute to on-prem IP</span>
+<span class="cm"># The first hop beyond the VPC should be the VGW (not internet gateway)</span></pre>
+  </div>
+
+  <div class="accordion">
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag danger" style="margin-right:8px;">DX</span>VIF shows "Available" but BGP status is "down" — no routes in VPC</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body">
+        <p><strong>Cause:</strong> The VIF's physical state is up but BGP session isn't established. Common causes: (a) incorrect BGP peer IP on your router — must match what you configured in the VIF (the Amazon router IP), (b) wrong BGP ASN — your router is advertising a different ASN than what was configured in the VIF, (c) BGP auth key mismatch — MD5 key configured on AWS VIF doesn't match your router's, (d) ACL/firewall blocking BGP (TCP 179) between your router and the AWS DX router IP, (e) BGP process not started on your router.</p>
+        <p><strong>Fix:</strong> Check the VIF's BGP peer details in the console — confirm the Amazon router IP (169.254.x.x) and your router IP match what's configured on your router's sub-interface. Check BGP summary on your router: <code>show bgp summary</code> (Cisco) or <code>show ip bgp summary</code>. Look for Active or Idle state — Active means your router is trying to connect but AWS isn't responding (usually ASN or IP mismatch). Idle means your BGP process isn't trying at all.</p>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag danger" style="margin-right:8px;">DX</span>BGP is up but on-prem hosts can't reach VPC instances — no routes in VPC route table</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body">
+        <p><strong>Cause:</strong> Route propagation is not enabled on the VPC route table. This is the #1 most common DX/VPN configuration miss. BGP session is up, routes are in the VGW's BGP table, but they're not propagated into the VPC route table that instances use. <strong>Fix:</strong> VPC → Route tables → select the private route table → Route propagation tab → Edit route propagation → enable for your VGW. Routes appear in the route table within seconds. Also check: are instances in the correct subnet using the private route table? Security Groups on the instances — are they allowing the on-prem source IP range?</p>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag warn" style="margin-right:8px;">VPN</span>VPN tunnel shows "Up" but no traffic flows — intermittent packet loss</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body">
+        <p><strong>Cause:</strong> Most commonly, MSS (Maximum Segment Size) clamping is not configured on your router. IPSec adds overhead (50–100 bytes) to each packet. Without MSS clamping, large TCP packets exceed the VPN tunnel MTU, get fragmented or dropped. The tunnel appears up (ICMP pings work — they're small), but large data transfers (HTTPS, file copies) fail or are very slow.</p>
+        <p><strong>Fix:</strong> Configure TCP MSS clamping on your router's VPN tunnel interface to 1379 bytes (AWS recommends this for its VPN). On Cisco: <code>ip tcp adjust-mss 1379</code> on the tunnel interface. On Linux: <code>iptables -t mangle -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1379</code>. Also check: are both VPN tunnels configured? AWS provides two tunnels for HA — if only one is configured, you lose redundancy within the VPN itself.</p>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag warn" style="margin-right:8px;">DX</span>Asymmetric routing — traffic from on-prem reaches VPC via DX but return traffic comes back via VPN</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body">
+        <p><strong>Cause:</strong> Your router uses LOCAL_PREF to prefer DX for outbound traffic, but AWS has no guidance on which path to use for return traffic — it load-balances or uses its own path selection. Return traffic via VPN + stateful firewall on-prem = firewall drops packets as unsolicited connections.</p>
+        <p><strong>Fix:</strong> Use MED (Multi-Exit Discriminator) to guide AWS's return path. In your BGP advertisements to AWS, set MED lower for the DX VIF (e.g., MED=100) and higher for the VPN (MED=200). AWS uses MED as a hint to prefer the lower value for the same prefix. On Cisco: in the BGP outbound route-map, <code>set metric 100</code>. Verify with: run a traceroute from an EC2 instance to your on-prem IP — the first hop beyond VGW should go through the DX path, not internet.</p>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag warn" style="margin-right:8px;">DX</span>Private VIF shows "Available" but DXGW association is "Disassociated"</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body">
+        <p><strong>Cause:</strong> The DX Gateway association with a VGW or TGW was deleted or failed to complete. Or: the allowed prefixes on the DXGW association don't include the on-prem prefixes being advertised — the DXGW filters routes that don't match the allowed prefix list.</p>
+        <p><strong>Fix:</strong> Re-associate the VGW/TGW with the DXGW via Direct Connect → Direct Connect gateways → associations → Associate gateway. Verify the allowed prefixes include all on-prem CIDR ranges you're advertising. The allowed prefixes is a whitelist — prefixes not listed are silently dropped by the DXGW even if BGP is up.</p>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag danger" style="margin-right:8px;">DX</span>DX connection stuck in "Requested" state for weeks</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body">
+        <p><strong>Cause:</strong> The LOA-CFA (Letter of Authorization) was not submitted to the colocation facility, or the facility is experiencing a delay. For Dedicated Connections, the cross-connect is not automatically installed — you must submit the LOA to the facility's remote hands team. <strong>Fix:</strong> Download the LOA-CFA from Direct Connect → Connections → select connection → Download LOA-CFA. Submit to the colocation facility's customer portal or remote hands team. Typical lead time: 3–10 business days at Equinix SG1. Once the cross-connect is installed, the connection transitions to "Pending" then "Available." If the LOA has expired (they're time-limited), request a new one from AWS Support.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S10 -->
+<section class="section-block" id="s10">
+  <div class="section-label"><span class="num">10</span> / DAY-2 OPS</div>
+  <h2 class="section-title">Day-2 Operations &amp; BAU <a class="anchor" href="#s10">#</a></h2>
+
+  <h3>BAU Runbook</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Task</th><th>Frequency</th><th>Method</th><th>Owner</th></tr></thead>
+    <tbody>
+      <tr><td>Monitor DX connection state + BGP status</td><td>Continuous (CloudWatch alarm)</td><td>CloudWatch metric: ConnectionState &lt; 1 → alert immediately</td><td>NOC / Platform team</td></tr>
+      <tr><td>Verify VPN backup tunnel health</td><td>Daily</td><td>VPN console → both tunnels should be UP even if DX is active. A down VPN backup tunnel = no failover path.</td><td>Network team</td></tr>
+      <tr><td>Review BGP route counts</td><td>Weekly</td><td>VPN telemetry AcceptedRouteCount; DX VIF describe — ensure expected number of routes exchanged</td><td>Network team</td></tr>
+      <tr><td>Annual DX failover test</td><td>Annually (MAS TRM §14.2)</td><td>Planned maintenance: shut DX BGP session → verify VPN takes over → measure failover time → document</td><td>Network + Application teams</td></tr>
+      <tr><td>DX connection maintenance window coordination</td><td>As needed (AWS maintenance)</td><td>CloudTrail + DX console — AWS sends maintenance notifications. Brief the NOC. Verify VPN backup in advance.</td><td>Platform team</td></tr>
+      <tr><td>Pre-shared key rotation (VPN)</td><td>Annually or per security policy</td><td>Update PSK in AWS VPN console + your router simultaneously during maintenance window</td><td>Security + Network team</td></tr>
+      <tr><td>Review BGP routing table alignment</td><td>Monthly</td><td>Compare on-prem BGP table to expected VPC CIDRs; compare VPC route tables to expected on-prem prefixes</td><td>Network team</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout bridge">
+    <div class="ct">🌉 Bridge from Storage/Virtualisation</div>
+    <p>DX Day-2 operations ≈ managing your MPLS circuit to a carrier colocation. Monthly BGP routing table alignment ≈ checking that your MPLS VPN is advertising the correct prefixes and receiving the correct customer routes. Annual DX failover test ≈ your annual DR test for the DC-to-DR site connectivity — you bring down the primary link, verify the backup takes over, measure RTO, document the result. VPN PSK rotation ≈ rotating the CHAP secrets on your iSCSI storage connections — scheduled, coordinated, tested. The same operational discipline you apply to physical infrastructure applies to cloud connectivity.</p>
+  </div>
+</section>
+
+<!-- S11 -->
+<section class="section-block" id="s11">
+  <div class="section-label"><span class="num">11</span> / MONITORING</div>
+  <h2 class="section-title">Monitoring, Metrics &amp; Alerting <a class="anchor" href="#s11">#</a></h2>
+
+  <h3>Key CloudWatch Metrics</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Metric</th><th>Namespace</th><th>Meaning</th><th>Alert Threshold</th></tr></thead>
+    <tbody>
+      <tr><td><code>ConnectionState</code></td><td>AWS/DX</td><td>1 = up, 0 = down. Physical DX connection health.</td><td>&lt;1 → 🔴 Immediate page</td></tr>
+      <tr><td><code>ConnectionBpsEgress</code></td><td>AWS/DX</td><td>Bits per second egress from AWS to on-prem over DX</td><td>&gt;80% of port capacity → 🟡 capacity planning alert</td></tr>
+      <tr><td><code>ConnectionBpsIngress</code></td><td>AWS/DX</td><td>Bits per second ingress from on-prem to AWS over DX</td><td>&gt;80% capacity → 🟡 review for LAG or upgrade</td></tr>
+      <tr><td><code>ConnectionPpsEgress</code></td><td>AWS/DX</td><td>Packets per second egress — high value can indicate small packet flood</td><td>Baseline + 3σ → 🟡 investigate traffic pattern</td></tr>
+      <tr><td><code>TunnelState</code></td><td>AWS/VPN</td><td>1 = up, 0 = down. Per-tunnel VPN health.</td><td>&lt;1 → 🟡 Alert (1 tunnel down is okay if other is up; both down = 🔴)</td></tr>
+      <tr><td><code>TunnelDataIn</code></td><td>AWS/VPN</td><td>Bytes through VPN tunnel inbound. Should be low if DX is primary.</td><td>High sustained value when DX is up → 🟡 asymmetric routing suspected</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>EventBridge + SNS Alert for DX State Change</h3>
+  <div class="code-wrap"><div class="code-header"><span class="code-lang">JSON — EventBridge pattern: DX connection state change</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <pre>{
+  <span class="str">"source"</span>: [<span class="str">"aws.directconnect"</span>],
+  <span class="str">"detail-type"</span>: [
+    <span class="str">"AWS Direct Connect Connection State Change"</span>,
+    <span class="str">"AWS Direct Connect Virtual Interface State Change"</span>
+  ],
+  <span class="str">"detail"</span>: {
+    <span class="str">"stateChangeReason"</span>: [{ <span class="str">"exists"</span>: <span class="kw">true</span> }]
+  }
+}
+<span class="cm">// Route to SNS → PagerDuty for immediate alert</span>
+<span class="cm">// Include detail.connectionId and detail.connectionState in notification</span></pre>
+  </div>
+
+  <div class="callout career">
+    <div class="ct">💼 Career Application</div>
+    <p>Monitoring DX and VPN is a basic expectation for any cloud architect role that involves hybrid connectivity. But the nuanced question interviewers ask is: "How do you know your VPN backup is healthy even when DX is working?" The answer: monitor TunnelState for both VPN tunnels separately from DX ConnectionState. A common production failure mode is: DX is up, VPN backup tunnels silently go down (DPD timeout, PSK expiry, ISP blocking UDP 500). No one notices because DX is working. Then DX fails and the VPN backup is also down. Two-layer monitoring — DX health AND VPN backup health — independently. That answer demonstrates operational experience beyond what you get from reading documentation.</p>
+  </div>
+</section>
+
+<!-- S12 -->
+<section class="section-block" id="s12">
+  <div class="section-label"><span class="num">12</span> / COST</div>
+  <h2 class="section-title">Cost &amp; Pricing Model <a class="anchor" href="#s12">#</a></h2>
+
+  <div class="table-wrap"><table>
+    <thead><tr><th>Component</th><th>Rate</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>DX Dedicated Connection — 1 Gbps</td><td>$216/month (ap-southeast-1)</td><td>Port fee regardless of utilisation. You pay for capacity, not usage.</td></tr>
+      <tr><td>DX Dedicated Connection — 10 Gbps</td><td>$1,620/month</td><td>Most common FSI production choice</td></tr>
+      <tr><td>DX Hosted Connection — 100 Mbps</td><td>~$100–200/month (partner-dependent)</td><td>Pricing varies by APN Partner. Check Singtel, Starhub, Equinix Connect pricing.</td></tr>
+      <tr><td>DX data transfer out (to on-prem)</td><td>$0.02/GB (ap-southeast-1)</td><td>Data from AWS to on-prem over DX. Standard AWS data transfer rates apply inbound.</td></tr>
+      <tr><td>DX Gateway</td><td>Free</td><td>No charge for the DXGW object. Pay only for the DX connection and data transfer.</td></tr>
+      <tr><td>Site-to-Site VPN connection</td><td>$0.05/hr (~$36/month)</td><td>Per VPN connection (2 tunnels each). Plus standard data transfer rates.</td></tr>
+      <tr><td>VPN data transfer out</td><td>Same as standard AWS egress</td><td>$0.09/GB first 10 TB (ap-southeast-1). VPN itself doesn't add data transfer cost.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Billing Scenarios</h3>
+  <h4>Scenario 1: Dev/Test (Hosted Connection + VPN)</h4>
+  <p>50 Mbps Hosted Connection (~$150/month) + 1 VPN backup ($36/month) + 100 GB data transfer (~$2/month). <strong>Total: ~$190/month.</strong> Adequate for dev/UAT connectivity with DX-like experience.</p>
+
+  <h4>Scenario 2: Production FSI (Single 10G DX + VPN)</h4>
+  <p>10 Gbps DX port ($1,620/month) + 1 VPN backup ($36/month) + 5 TB data transfer ($100/month). <strong>Total: ~$1,756/month.</strong> Standard production FSI connectivity.</p>
+
+  <h4>Scenario 3: High-Availability FSI (Dual 10G DX, Diverse Locations + 2× VPN)</h4>
+  <p>2× 10 Gbps DX ($3,240/month) + 2× VPN backup ($72/month) + 20 TB data transfer ($400/month). <strong>Total: ~$3,712/month.</strong> Full redundancy across both DX locations. Trading floor / payments critical infrastructure level.</p>
+
+  <div class="callout warn">
+    <div class="ct">💰 Cost Trap: Data Transfer via VPN vs DX</div>
+    <p>Data transfer out via DX costs $0.02/GB. Data transfer out via the public internet (when using internet VPN) costs $0.09/GB for the first 10 TB. For an organisation moving 10 TB/month from AWS to on-prem: DX = $200/month vs internet = $900/month. At 50 TB/month: DX = $1,000 vs internet = $4,500. At scale, DX's data transfer discount alone can justify the port cost. Always calculate total cost including data transfer before deciding on Hosted vs Dedicated connection sizing.</p>
+  </div>
+</section>
+
+<!-- S13 -->
+<section class="section-block" id="s13">
+  <div class="section-label"><span class="num">13</span> / LIMITS</div>
+  <h2 class="section-title">Limits, Quotas &amp; Scaling Boundaries <a class="anchor" href="#s13">#</a></h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Limit</th><th>Default</th><th>Raisable?</th><th>Practical Impact</th></tr></thead>
+    <tbody>
+      <tr><td>DX connections per account per region</td><td>10</td><td>✅ Service Quotas</td><td>Most organisations have 1–3. No concern until very large scale.</td></tr>
+      <tr><td>VIFs per DX connection</td><td>50</td><td>✅ Yes</td><td>Multiple Private VIFs + Transit VIFs + Public VIF on one connection. Rarely hit.</td></tr>
+      <tr><td>VGWs per DX Gateway</td><td>10</td><td>✅ Yes</td><td>If attaching many VGWs directly (rather than via TGW), may hit this. Use TGW to avoid.</td></tr>
+      <tr><td>DX Gateways per account</td><td>200</td><td>✅ Yes</td><td>Never hit in practice. Global resource, no region limit.</td></tr>
+      <tr><td>BGP routes advertised to AWS (per VIF)</td><td>100</td><td>✅ Yes</td><td>FSI networks with many on-prem subnets can approach this. Summarise routes to stay under limit.</td></tr>
+      <tr><td>BGP routes received from AWS (per VIF)</td><td>200 (Private VIF) / unlimited (Public VIF)</td><td>✅ Limited</td><td>Public VIF advertises ~10k AWS public prefixes — your router must handle this table size.</td></tr>
+      <tr><td>Connections per LAG</td><td>4</td><td>❌ Hard</td><td>Maximum 4× 10G in a LAG = 40 Gbps aggregate. For higher bandwidth, use multiple LAGs or 100G connections.</td></tr>
+      <tr><td>VPN tunnels per VPN connection</td><td>2</td><td>❌ Hard</td><td>Always 2 — different AZs. Use multiple VPN connections for more throughput (ECMP).</td></tr>
+      <tr><td>Max VPN throughput per tunnel</td><td>~1.25 Gbps</td><td>❌ Hard (per tunnel)</td><td>Aggregate with multiple connections. For &gt;5 Gbps, use Accelerated VPN (AWS Global Accelerator-backed).</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout bridge">
+    <div class="ct">🌉 Bridge from Storage/Virtualisation</div>
+    <p>The 100 BGP route limit per VIF ≈ the maximum number of host routes in your MPLS VPN's route table from a single CE peer. FSI DC networks with granular subnetting (per-VLAN, per-application ranges) can hit this. The solution is the same as in MPLS: route summarisation at the DC edge router. Summarise 10.100.x.x/16 instead of advertising 200 individual /24s. The LAG 4-connection limit ≈ the maximum port count in a standard 802.3ad LACP bond — most switch vendors also cap at 4 or 8 active members. If you need &gt;40 Gbps to AWS, use a 100G Dedicated Connection instead of trying to LAG beyond 4 ports.</p>
+  </div>
+</section>
+
+<!-- S14 -->
+<section class="section-block" id="s14">
+  <div class="section-label"><span class="num">14</span> / SECURITY</div>
+  <h2 class="section-title">Security Hardening Deep Dive <a class="anchor" href="#s14">#</a></h2>
+
+  <h3>Encryption in Transit — DX vs VPN</h3>
+  <p>Direct Connect is <strong>not encrypted by default</strong>. The physical circuit is private (not internet-routed), but traffic on the wire is cleartext unless you add encryption. For MAS TRM §11.3.2 compliance, you must add encryption on top of DX. Two options:</p>
+  <div class="bp-grid">
+    <div class="bp-card"><div class="bp-icon">🔒</div><h4>MACsec (Recommended for DX)</h4><p>IEEE 802.1AE Layer 2 encryption. Available on 10 Gbps and 100 Gbps Dedicated Connections. Wire-speed, no latency penalty. Encrypts at the Ethernet frame level between your CE router and the AWS DX router at the DX location. Configure with a CAK (Connectivity Association Key) pre-shared between your router and AWS.</p></div>
+    <div class="bp-card"><div class="bp-icon">🛡️</div><h4>IPSec over DX</h4><p>Run a Site-to-Site VPN tunnel over the DX connection instead of the internet. Provides Layer 3 encryption. Works on all connection speeds (unlike MACsec). Slight performance overhead from IPSec processing. Uses the DX path (consistent latency) while adding encryption. Common for &lt;10 Gbps Hosted Connections that don't support MACsec.</p></div>
+    <div class="bp-card"><div class="bp-icon">🌐</div><h4>TLS/Application Layer</h4><p>Application-level encryption (HTTPS, TLS 1.3) provides end-to-end encryption regardless of network path. Satisfies encryption requirements but doesn't prevent network-level inspection at the DX location. Use in addition to, not instead of, MACsec or IPSec.</p></div>
+    <div class="bp-card"><div class="bp-icon">📵</div><h4>Private VIF ≠ Encryption</h4><p>A common misconception: "DX is private, so it's secure." Private only means the traffic doesn't traverse the public internet. The DX location is a shared colocation facility — other tenants are present. Without MACsec or IPSec, traffic on the cross-connect is plaintext Ethernet frames. For regulated data (PII, financial transactions), MACsec or IPSec is mandatory.</p></div>
+  </div>
+
+  <h3>Security Group and NACLs for DX/VPN</h3>
+  <div class="code-wrap"><div class="code-header"><span class="code-lang">JSON — Security Group allowing on-prem CIDR access to EC2</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <pre>{
+  <span class="str">"GroupName"</span>: <span class="str">"allow-onprem-access"</span>,
+  <span class="str">"Description"</span>: <span class="str">"Allow traffic from on-prem DC via DX/VPN"</span>,
+  <span class="str">"IpPermissions"</span>: [
+    {
+      <span class="str">"IpProtocol"</span>: <span class="str">"tcp"</span>,
+      <span class="str">"FromPort"</span>: <span class="nm">443</span>,
+      <span class="str">"ToPort"</span>: <span class="nm">443</span>,
+      <span class="str">"IpRanges"</span>: [{ <span class="str">"CidrIp"</span>: <span class="str">"10.100.0.0/16"</span>, <span class="str">"Description"</span>: <span class="str">"DC primary subnet"</span> }]
+    },
+    {
+      <span class="str">"IpProtocol"</span>: <span class="str">"tcp"</span>,
+      <span class="str">"FromPort"</span>: <span class="nm">22</span>,
+      <span class="str">"ToPort"</span>: <span class="nm">22</span>,
+      <span class="str">"IpRanges"</span>: [{ <span class="str">"CidrIp"</span>: <span class="str">"10.100.50.0/24"</span>, <span class="str">"Description"</span>: <span class="str">"Jump host subnet only"</span> }]
+    }
+  ]
+}
+<span class="cm">/* NEVER allow 0.0.0.0/0 in production SGs even for internal-seeming traffic */</span>
+<span class="cm">/* DX/VPN doesn't mean on-prem is trusted — apply least privilege */</span></pre>
+  </div>
+
+  <h3>Threat Model</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Threat</th><th>Attack Vector</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>Traffic interception at DX location</td><td>Malicious actor at colocation facility (insider, other tenant) intercepts frames on the cross-connect</td><td>MACsec encrypts at Layer 2 between CE router and AWS DX router. Cleartext traffic can be intercepted at the DX location patch panel.</td></tr>
+      <tr><td>BGP route injection</td><td>Attacker modifies BGP advertisements to redirect traffic to a controlled network segment</td><td>BGP MD5 authentication prevents session hijacking. Prefix filtering (route-maps on your router) prevents accepting unexpected routes from AWS side.</td></tr>
+      <tr><td>On-prem compromise pivoting to AWS</td><td>An attacker who has compromised an on-prem host uses DX connectivity to directly attack VPC resources</td><td>Security Groups and NACLs still apply to DX/VPN traffic — on-prem IPs are not trusted. Segment by source IP range. AWS Network Firewall in VPC can inspect DX traffic.</td></tr>
+      <tr><td>VPN PSK compromise</td><td>Pre-shared key exposed (hardcoded in config, stolen from router) — attacker sets up a rogue VPN endpoint</td><td>Use certificate-based authentication instead of PSK. Rotate PSK annually minimum. Store in Secrets Manager, not plaintext config files.</td></tr>
+      <tr><td>VPN tunnel eavesdropping</td><td>Attacker on internet path between CGW and AWS intercepts VPN traffic</td><td>IPSec AES-256-GCM provides confidentiality and integrity. Traffic is encrypted end-to-end. Ensure IKEv2 + strong DH groups (20+).</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout career">
+    <div class="ct">💼 Career Application</div>
+    <p>The DX encryption misconception is a known FSI audit finding. Many organisations implemented DX and assumed "private circuit = encrypted." MAS TRM §11.3.2 explicitly requires encryption in transit for connections to cloud service providers carrying regulated data. When an MAS auditor asks "is your AWS connectivity encrypted?" the answer must reference either MACsec on DX (if using 10/100 Gbps Dedicated Connection) or IPSec (if using Hosted Connection or lower-speed DX). "We use Direct Connect and it's private" is not a satisfactory answer — it demonstrates a gap in the architecture team's understanding of the threat model. Know this distinction cold before any FSI audit or architecture review.</p>
+  </div>
+</section>
+
+<!-- S15 -->
+<section class="section-block" id="s15">
+  <div class="section-label"><span class="num">15</span> / DR</div>
+  <h2 class="section-title">Disaster Recovery &amp; Multi-Region <a class="anchor" href="#s15">#</a></h2>
+
+  <h3>RTO/RPO Matrix for DX Failure Scenarios</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Failure Scenario</th><th>RTO (with BFD)</th><th>RTO (without BFD)</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>Single DX VIF BGP failure</td><td>&lt;1 sec → VPN backup</td><td>90 sec (BGP holddown)</td><td>BFD enabled on VIF, VPN backup active</td></tr>
+      <tr><td>DX physical connection failure</td><td>&lt;1 sec (BFD detects port down)</td><td>90 sec</td><td>BFD + VPN backup. Physical failure = BFD detects immediately.</td></tr>
+      <tr><td>Single DX location failure (e.g., Equinix SG1)</td><td>&lt;1 sec → second DX (SG2) or VPN</td><td>90 sec per path</td><td>Dual DX at diverse locations (SG1 + SG2) + VPN backup</td></tr>
+      <tr><td>Both DX locations fail simultaneously</td><td>VPN backup takes over (&lt;1 sec with BFD)</td><td>90 sec</td><td>VPN backup is the last-resort path. Ensure it's sized for critical traffic.</td></tr>
+      <tr><td>AWS ap-southeast-1 regional impairment</td><td>DR to ap-southeast-3 via DX Gateway</td><td>Manual intervention without DXGW</td><td>DX Gateway attached to VGW/TGW in both regions. DX connection remains up; reroute at application layer.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Multi-Region DX Design via DX Gateway</h3>
+  <p>The DX Gateway's global nature makes multi-region DR connectivity straightforward. One DX connection in Singapore (Equinix SG1) attaches to a DX Gateway. The DX Gateway is associated with VGWs in both ap-southeast-1 (primary) and ap-southeast-3 (DR). In normal operation, on-prem traffic routes to ap-southeast-1 VPCs via the DX path. In a DR event where ap-southeast-1 workloads fail over to ap-southeast-3, the existing DX connection provides connectivity to the DR region automatically — no new circuit, no new BGP session.</p>
+  <p>BGP prefix advertisement controls which region is active: when ap-southeast-1 is primary, the ap-southeast-1 VGW advertises VPC CIDRs with normal MED. When failing over to ap-southeast-3, the ap-southeast-3 VGW starts advertising its VPC CIDRs. On-prem routers see the new prefixes and begin routing to the DR VPCs. RTO for this path: seconds (BGP convergence time), not hours (physical circuit provisioning).</p>
+
+  <h3>DR Runbook: DX Failure Failover to VPN</h3>
+  <div class="code-wrap"><div class="code-header"><span class="code-lang">bash — DR runbook steps</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <pre><span class="cm"># Step 1: Confirm DX is down, VPN is up</span>
+aws directconnect describe-connections --query 'connections[*].{Name:connectionName,State:connectionState}'
+aws ec2 describe-vpn-connections --query 'VpnConnections[*].VgwTelemetry[*].{Status:Status,Routes:AcceptedRouteCount}'
+
+<span class="cm"># Step 2: Verify applications are using VPN path</span>
+<span class="cm"># From on-prem: traceroute to VPC IP — should show VPN tunnel endpoint, not DX path</span>
+<span class="cm"># Response time increase expected (DX: 4ms → VPN: 15-20ms)</span>
+
+<span class="cm"># Step 3: If VPN is also down — emergency manual BGP failover</span>
+<span class="cm"># On your on-prem router: clear the VPN BGP session to force reconvergence</span>
+<span class="cm"># Cisco: clear ip bgp 169.254.10.1 soft</span>
+
+<span class="cm"># Step 4: Notify stakeholders of connectivity status</span>
+<span class="cm"># Expected latency increase: normal (DX=4ms → VPN=15-20ms)</span>
+<span class="cm"># Expected throughput reduction: VPN max ~1.25 Gbps vs DX 10 Gbps</span>
+<span class="cm"># Critical: if throughput was near DX capacity, VPN may be insufficient for all traffic</span>
+
+<span class="cm"># Step 5: When DX recovers — verify BGP re-establishes and DX preferred</span>
+aws directconnect describe-virtual-interfaces --query 'virtualInterfaces[*].{VIF:virtualInterfaceName,BGP:bgpPeers[0].bgpStatus}'
+<span class="cm"># Once BGP "up", DX routes have higher LOCAL_PREF → traffic automatically migrates back</span></pre>
+  </div>
+
+  <div class="callout bridge">
+    <div class="ct">🌉 Bridge from Storage/Virtualisation</div>
+    <p>DX+VPN DR ≈ your primary MPLS circuit with an internet ADSL/broadband backup. When the MPLS circuit fails, the router automatically fails over to the broadband backup (lower speed, higher latency, but functional). BFD ≈ the fast link-state detection you'd use on the MPLS CE-PE interface — detects failure in sub-second versus waiting for routing protocol convergence. The DX Gateway multi-region pattern ≈ having your MPLS provider's PE router connected to both your primary DC and your DR site — one physical connection to the carrier, reachable to both locations via the carrier's backbone.</p>
+  </div>
+</section>
+
+<!-- S16 -->
+<section class="section-block" id="s16">
+  <div class="section-label"><span class="num">16</span> / LAB</div>
+  <h2 class="section-title">Hands-On Practice Lab <a class="anchor" href="#s16">#</a></h2>
+
+  <div class="callout info">
+    <div class="ct">🧪 Lab Overview</div>
+    <p><strong>Scenario:</strong> Build the DX+VPN backup architecture using a VyOS (or pfSense) VM as your simulated on-prem router. Provision a Site-to-Site VPN first (testable immediately), verify BGP routing, test both tunnel failover, then walk through the DX console steps (without physical provisioning). Configure BGP traffic engineering (LOCAL_PREF + MED) and document the failover behaviour.</p>
+    <p><strong>Duration:</strong> 60–90 min (VPN portion testable today). <strong>Cost:</strong> ~$5 for VPN + EC2 test instances for a few hours. <strong>Prerequisites:</strong> Guide 01 (VPC), Guide 02 (TGW) for Transit VIF pattern.</p>
+  </div>
+
+  <h3>Lab Setup — VyOS as On-Prem Router</h3>
+  <p>Launch a VyOS AMI (or pfSense) as an EC2 instance in a separate "on-prem simulation" VPC, or use an actual on-prem VM with a public IP. VyOS supports BGP, IPSec, and is free.</p>
+
+  <h3>Lab Phases</h3>
+  <p><strong>Phase 1 — VPN Setup (30 min):</strong></p>
+  <ul>
+    <li>Create VGW, attach to VPC, enable route propagation in both private and public route tables</li>
+    <li>Create Customer Gateway with your VyOS public IP + ASN 65000</li>
+    <li>Create VPN connection (BGP, IKEv2, AES-256)</li>
+    <li>Download VyOS configuration from the console</li>
+    <li>Apply to VyOS: configure IPSec tunnels + BGP neighbor for both tunnels</li>
+  </ul>
+  <p><strong>Phase 2 — BGP Verification (20 min):</strong></p>
+  <ul>
+    <li>Verify BGP established on both tunnels: <code>show bgp summary</code> on VyOS</li>
+    <li>Verify on-prem routes appear in VPC route table via VGW propagation</li>
+    <li>Ping test: VyOS → EC2 instance in VPC via private IP</li>
+    <li>Verify VPC routes appear in VyOS BGP table: <code>show ip bgp</code></li>
+  </ul>
+  <p><strong>Phase 3 — Tunnel Failover Test (15 min):</strong></p>
+  <ul>
+    <li>Start continuous ping from VyOS to EC2</li>
+    <li>On VyOS: shut down Tunnel 1 interface</li>
+    <li>Observe: BGP fails over to Tunnel 2, ping continues with 1–2 dropped packets</li>
+    <li>Re-enable Tunnel 1: BGP reconverges, ECMP may resume</li>
+  </ul>
+  <p><strong>Phase 4 — BGP Traffic Engineering (15 min):</strong></p>
+  <ul>
+    <li>Configure LOCAL_PREF 200 on Tunnel 1 routes, 100 on Tunnel 2</li>
+    <li>Verify: <code>show ip bgp</code> — Tunnel 1 routes show higher LOCAL_PREF, are preferred</li>
+    <li>Configure AS_PATH prepending on Tunnel 2 advertisements to AWS: prepend 65000 twice</li>
+    <li>Simulate asymmetric routing detection: traceroute from EC2 to VyOS — should prefer Tunnel 1 return path</li>
+  </ul>
+
+  <h3>Cleanup</h3>
+  <ul>
+    <li>Delete VPN connection (stops $0.05/hr charge)</li>
+    <li>Detach and delete VGW</li>
+    <li>Delete Customer Gateway</li>
+    <li>Terminate VyOS EC2 instance</li>
+    <li>Delete test EC2 instances in VPC</li>
+  </ul>
+
+  <h3>Stretch Goals</h3>
+  <ol>
+    <li>Walk through the DX console steps up to LOA-CFA download — don't submit (costs money), but understand the full provisioning flow</li>
+    <li>Create a DX Gateway and simulate a VGW association (no physical DX needed to create these objects)</li>
+    <li>Configure a TGW and attach the VPN to the TGW instead of VGW — verify routing through TGW route tables</li>
+    <li>Set up a CloudWatch alarm on TunnelState for both VPN tunnels — verify it fires when you shut a tunnel down</li>
+    <li>Write the Terraform equivalent of your VPN setup and compare it against the GUI build</li>
+  </ol>
+</section>
+
+<!-- S17 -->
+<section class="section-block" id="s17">
+  <div class="section-label"><span class="num">17</span> / PATTERNS</div>
+  <h2 class="section-title">Architectural Patterns &amp; Real-World Designs <a class="anchor" href="#s17">#</a></h2>
+
+  <h3>Pattern 1: Full FSI Production Architecture</h3>
+  <div class="arch-diagram">
+    <div class="arch-label">On-premises Singapore DC — Equinix SG1 + SG2 presence</div>
+    <div class="arch-row">
+      <div class="arch-box gold">CE Router A (SG1)<br><small>BGP ASN 65000</small></div>
+      <div class="arch-box gold">CE Router B (SG2)<br><small>BGP ASN 65000</small></div>
+    </div>
+    <div class="arch-row">
+      <div class="arch-arrow">↓ 10G DX + MACsec</div>
+      <div class="arch-arrow" style="margin-left:60px">↓ 10G DX + MACsec</div>
+    </div>
+    <div class="arch-row">
+      <div class="arch-box primary">DX Gateway (Global)<br><small>Amazon ASN 64512</small></div>
+    </div>
+    <div class="arch-row"><div class="arch-arrow">↓ Transit VIF → DXGW → TGW</div></div>
+    <div class="arch-row">
+      <div class="arch-box secondary">TGW ap-southeast-1<br><small>Prod VPCs + Non-Prod VPCs</small></div>
+      <div class="arch-box secondary">TGW ap-southeast-3 (DR)<br><small>DR VPCs</small></div>
+    </div>
+    <div class="arch-row"><div class="arch-arrow">↓ VPN backup (IKEv2, AES-256) over internet</div></div>
+    <div class="arch-row">
+      <div class="arch-box warn">VPN to TGW ap-southeast-1<br><small>lower LOCAL_PREF — backup only</small></div>
+    </div>
+    <div class="arch-divider"></div>
+    <div class="arch-label">BFD on both DX VIFs | BGP MED/LOCAL_PREF for traffic engineering | Annual failover test per MAS TRM §14</div>
+  </div>
+  <p><strong>Key design decisions:</strong> Dual DX from diverse locations (SG1 and SG2) eliminates single-facility risk. Transit VIF → DXGW → TGW provides multi-VPC scalability without per-VPC VIF management. DX Gateway attached to DR region TGW — no additional circuit needed for DR connectivity. VPN backup over internet as last resort — sized at 1 Gbps which is sufficient for critical management traffic even if not for full production bandwidth. MACsec on both 10G connections satisfies MAS TRM §11.3.2.</p>
+
+  <h3>Pattern 2: Cost-Optimised Dev/Test Connectivity</h3>
+  <p>Dev and test environments don't need the full dual-DX stack. Pattern: 50–200 Mbps Hosted Connection from a DX partner (Singtel, Starhub) as primary path + Site-to-Site VPN backup. Total: ~$200–300/month vs $3,000+/month for the production pattern. The Hosted Connection gives DX-like consistency for developer workloads (IDE remote development, database access, CI/CD artifact pulls) without the dedicated port cost. VPN backup provides resilience. Route the environments through the same DX Gateway and TGW as production — just different TGW route table attachment to isolate dev/test traffic from prod.</p>
+
+  <h3>Pattern 3: Public VIF for High-Throughput S3 / ECR Access</h3>
+  <p>Many FSI organisations route S3 and ECR traffic through a NAT Gateway in their VPC, adding latency and cost ($0.045/GB through NAT Gateway + $0.09/GB internet egress from S3). Alternative: a Public VIF on the same DX connection gives direct access to S3 and ECR public endpoints without traversing the VPC at all. Path: on-prem → DX Public VIF → S3/ECR directly. Data transfer cost over DX: $0.02/GB (vs $0.045 + $0.09 = $0.135/GB via NAT). For an organisation pulling 50 TB/month of Docker images from ECR: DX Public VIF = $1,000/month vs NAT Gateway path = $6,750/month. The Public VIF pays for itself at moderate transfer volumes.</p>
+
+  <h3>Pattern 4: Accelerated Site-to-Site VPN</h3>
+  <p>Standard Site-to-Site VPN tunnels terminate on AWS VPN endpoints in the same region. For organisations geographically distant from the AWS region (e.g., connecting from Europe to ap-southeast-1), the internet path introduces high latency. Accelerated VPN uses AWS Global Accelerator as the anycast entry point — your VPN traffic enters the AWS backbone at the nearest AWS edge location (e.g., London) and travels over AWS's private backbone to ap-southeast-1. Latency reduction: 30–50% for long-distance VPN. Premium: slightly higher cost. Use for: disaster recovery from distant locations, global employee connectivity, any VPN where latency is critical but DX isn't available yet.</p>
+
+  <h3>Anti-Pattern: Private VIF Per VPC at Scale</h3>
+  <p>An early DX architecture that worked for 2–3 VPCs but becomes unmanageable at 10+: one Private VIF per VPC, each with its own BGP session on your router. Problems at scale: (a) your router's BGP table has N sessions × M routes, where N grows with every new VPC. (b) Adding a new VPC requires provisioning a new VIF, BGP session configuration change on your router, and potentially a new VLAN. (c) Route summarisation becomes complex when each VPC has different CIDR ranges. (d) You approach the 50 VIF per connection limit. Solution: migrate to Transit VIF → DX Gateway → TGW pattern. One BGP session, all VPCs reachable via TGW routing.</p>
+
+  <div class="callout ai">
+    <div class="ct">🤖 AI / Agentic Angle</div>
+    <p>Network telemetry from DX and VPN is increasingly feeding AI-driven operations. DX connection metrics (ConnectionBpsEgress, latency histograms), BGP route change events (via CloudTrail), and VPN tunnel telemetry can be ingested into Amazon Bedrock via a Kinesis Data Stream → Lambda → Knowledge Base pipeline. An AI ops agent with this context can correlate a DX bandwidth spike with a specific batch job's S3 transfer, predict when the 10G connection will be saturated, and recommend right-sizing actions before an outage occurs. The DX monitoring infrastructure built in S11 becomes the data source for proactive AI-driven capacity management.</p>
+  </div>
+</section>
+
+<!-- S18 -->
+<section class="section-block" id="s18">
+  <div class="section-label"><span class="num">18</span> / CHEAT SHEET</div>
+  <h2 class="section-title">Quick-Reference Cheat Sheet <a class="anchor" href="#s18">#</a></h2>
+
+  <div class="callout protip"><div class="ct">📌 Save This Section</div><p>All essential DX + VPN reference on one screen.</p></div>
+
+  <div class="cheat-section">
+    <h4>GUI Navigation Paths</h4>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Task</th><th>Navigation</th></tr></thead>
+      <tbody>
+        <tr><td>Create DX Connection</td><td>Direct Connect → Connections → Create connection</td></tr>
+        <tr><td>Download LOA-CFA</td><td>Direct Connect → Connections → select → Download LOA-CFA</td></tr>
+        <tr><td>Create VIF</td><td>Direct Connect → Connections → select → Create virtual interface</td></tr>
+        <tr><td>Create DX Gateway</td><td>Direct Connect → Direct Connect gateways → Create</td></tr>
+        <tr><td>Associate VGW/TGW to DXGW</td><td>Direct Connect → Direct Connect gateways → select → Gateway associations → Associate</td></tr>
+        <tr><td>Create VGW</td><td>VPC → Virtual private gateways → Create</td></tr>
+        <tr><td>Attach VGW to VPC</td><td>VPC → Virtual private gateways → select → Actions → Attach to VPC</td></tr>
+        <tr><td>Enable route propagation</td><td>VPC → Route tables → select → Route propagation → Edit</td></tr>
+        <tr><td>Create Customer Gateway</td><td>VPC → Customer gateways → Create customer gateway</td></tr>
+        <tr><td>Create VPN connection</td><td>VPC → Site-to-Site VPN connections → Create VPN connection</td></tr>
+        <tr><td>Download VPN config</td><td>VPC → Site-to-Site VPN connections → select → Download configuration</td></tr>
+        <tr><td>View VPN tunnel telemetry</td><td>VPC → Site-to-Site VPN connections → select → Tunnel details tab</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="cheat-section">
+    <h4>Essential CLI Commands</h4>
+    <div class="code-wrap" style="margin:0"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm"># DX</span>
+aws directconnect describe-connections --query 'connections[*].{Name:connectionName,State:connectionState}'
+aws directconnect describe-virtual-interfaces --query 'virtualInterfaces[*].{Name:virtualInterfaceName,BGP:bgpPeers[0].bgpStatus,State:virtualInterfaceState}'
+aws directconnect describe-direct-connect-gateways
+
+<span class="cm"># VPN</span>
+aws ec2 describe-vpn-connections --query 'VpnConnections[*].{ID:VpnConnectionId,State:State,T1:VgwTelemetry[0].Status,T2:VgwTelemetry[1].Status}'
+aws ec2 describe-customer-gateways --query 'CustomerGateways[*].{IP:IpAddress,ASN:BgpAsn,State:State}'
+
+<span class="cm"># Route verification</span>
+aws ec2 describe-route-tables --route-table-ids rtb-xxx --query 'RouteTables[*].Routes[?Origin==`EnableVgwRoutePropagation`]'
+aws ec2 describe-vpn-gateways --query 'VpnGateways[*].{ID:VpnGatewayId,State:State,VPC:VpcAttachments[0].VpcId}'</pre>
+    </div>
+  </div>
+
+  <div class="cheat-section">
+    <h4>DX vs VPN — When to Use What</h4>
+    <p style="font-family:var(--font-mono);font-size:12.5px;line-height:2.2">
+      Latency &lt;10ms, throughput &gt;1Gbps → <strong>Direct Connect</strong><br>
+      Need connectivity today, DX not ready → <strong>Site-to-Site VPN</strong><br>
+      Backup path for DX failure → <strong>VPN (always configure this)</strong><br>
+      Access S3/ECR without NAT → <strong>Public VIF on DX</strong><br>
+      Connect to 10+ VPCs from one DX → <strong>Transit VIF → DXGW → TGW</strong><br>
+      Connect to multiple regions → <strong>DX Gateway (global resource)</strong><br>
+      Long-distance VPN, latency critical → <strong>Accelerated VPN</strong><br>
+      Encrypt DX traffic → <strong>MACsec (10/100G) or IPSec over DX</strong>
+    </p>
+  </div>
+
+  <div class="cheat-section">
+    <h4>BGP Traffic Engineering Quick Reference</h4>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Goal</th><th>Attribute</th><th>Where</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Prefer DX over VPN (outbound from on-prem)</td><td>LOCAL_PREF</td><td>Your router</td><td>DX=200, VPN=100 (higher wins)</td></tr>
+        <tr><td>Prefer DX for return traffic (from AWS)</td><td>MED</td><td>Your BGP advertisements to AWS</td><td>DX=100, VPN=200 (lower wins)</td></tr>
+        <tr><td>Make backup path less preferred</td><td>AS_PATH prepend</td><td>Your BGP advertisements to AWS over VPN</td><td>Prepend your ASN 2–3 times</td></tr>
+        <tr><td>Load balance across two DX</td><td>ECMP</td><td>TGW + your router</td><td>Equal cost routes, ECMP enabled</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="cheat-section">
+    <h4>Top 5 Debug Commands When Connectivity Fails</h4>
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Check</th><th>Command</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>DX connection state</td><td><code>aws directconnect describe-connections --query 'connections[*].{Name:connectionName,State:connectionState}'</code></td></tr>
+        <tr><td>2</td><td>BGP status on VIF</td><td><code>aws directconnect describe-virtual-interfaces --query 'virtualInterfaces[*].{VIF:virtualInterfaceName,BGP:bgpPeers[0].bgpStatus}'</code></td></tr>
+        <tr><td>3</td><td>VPN tunnel health</td><td><code>aws ec2 describe-vpn-connections --query 'VpnConnections[*].VgwTelemetry[*].{Status:Status,Routes:AcceptedRouteCount}'</code></td></tr>
+        <tr><td>4</td><td>Route propagation enabled?</td><td><code>aws ec2 describe-route-tables --query 'RouteTables[?PropagatingVgws != `[]`].{RT:RouteTableId,VGW:PropagatingVgws}'</code></td></tr>
+        <tr><td>5</td><td>Propagated routes in table</td><td><code>aws ec2 describe-route-tables --route-table-ids RTB-ID --query 'RouteTables[*].Routes[?Origin==`EnableVgwRoutePropagation`]'</code></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- S19 -->
+<section class="section-block" id="s19">
+  <div class="section-label"><span class="num">19</span> / FAQ</div>
+  <h2 class="section-title">Regular FAQ — Beginner Focused <a class="anchor" href="#s19">#</a></h2>
+
+  <div class="accordion">
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag beginner" style="margin-right:8px;">Beginner</span>Is Direct Connect encrypted?</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body"><p>No — Direct Connect is not encrypted by default. It provides a private circuit (your traffic doesn't traverse the public internet), but traffic on the wire is cleartext unless you add encryption. For MAS TRM §11.3 compliance, add MACsec (Layer 2 encryption, available on 10/100 Gbps Dedicated Connections) or run IPSec VPN tunnels over the DX connection. "Private" and "encrypted" are different properties — DX is private, but encryption is your responsibility to add.</p></div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag beginner" style="margin-right:8px;">Beginner</span>How long does it take to get Direct Connect?</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body"><p>For a Dedicated Connection (1/10/100 Gbps ordered from AWS directly): 2–8 weeks typically. After submitting the order, AWS provisions the port in 3–5 business days and provides an LOA-CFA. You submit this to the colocation facility (e.g., Equinix SG1) which installs the cross-connect — typically another 5–10 business days. Then you provision the VIF and BGP. Total: 2–6 weeks from order to BGP up. For a Hosted Connection from an APN Partner (e.g., Singtel): days to 2 weeks — the partner already has the physical connection, they just provision a slice for you. Start DX orders at project kick-off, not when you need connectivity.</p></div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag beginner" style="margin-right:8px;">Beginner</span>What's the difference between a VGW and a TGW for VPN/DX termination?</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body"><p>A Virtual Private Gateway (VGW) is attached to a single VPC — it terminates VPN or DX Private VIF connections for that one VPC. A Transit Gateway (TGW) is a regional hub that can have many VPCs, VPN connections, and DX Transit VIFs attached. For one VPC: VGW is simpler. For multiple VPCs: TGW is the right answer — one VPN or Transit VIF can reach all TGW-attached VPCs through TGW route tables. At scale (5+ VPCs), always use TGW.</p></div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag beginner" style="margin-right:8px;">Beginner</span>Do I need BGP for VPN? Can I use static routing?</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body"><p>Static routing works but has significant limitations. With static routes, you manually define which IP ranges go over the VPN. Failover between the two VPN tunnels is not automatic — if Tunnel 1 goes down, traffic doesn't automatically shift to Tunnel 2 without manual intervention or monitoring. With BGP (dynamic routing), route exchange is automatic, both tunnels participate in BGP, and failover between tunnels is automatic. For any production use, always use BGP. Static routing is only appropriate for testing or very simple non-critical dev environments.</p></div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag beginner" style="margin-right:8px;">Beginner</span>Why are there always two VPN tunnels?</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body"><p>AWS always provisions two IPSec tunnels per VPN connection, terminating on endpoints in different Availability Zones. This provides redundancy for AWS-side maintenance and failures. Both tunnels connect to the same Customer Gateway (your router) and can carry traffic simultaneously (Active/Active with ECMP) or in Active/Standby mode. Both tunnels should always be configured on your router — leaving one unconfigured means you lose the built-in HA. AWS charges for the VPN connection, not per tunnel — both tunnels are included in the $0.05/hr price.</p></div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag architect" style="margin-right:8px;">Architect</span>What is the DX Gateway for and do I always need one?</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body"><p>The DX Gateway is a global resource that enables one DX connection to reach VGWs or TGWs in multiple AWS regions. Without a DXGW, a Private VIF connects to one VGW in one region only. With a DXGW, the same VIF connects to the DXGW which is associated with VGWs/TGWs in any region worldwide. You need it if: (a) you want to connect to VPCs in multiple regions from one DX connection, or (b) you're using Transit VIF to reach a TGW. For a single-region, single-VPC deployment, a DXGW is optional — you can attach a Private VIF directly to a VGW. For any multi-VPC or multi-region deployment, DXGW is the correct architecture.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- S20 -->
+<section class="section-block" id="s20">
+  <div class="section-label"><span class="num">20</span> / INTERVIEW Q&amp;A</div>
+  <h2 class="section-title">Principal Architect Interview Q&amp;A <a class="anchor" href="#s20">#</a></h2>
+
+  <div class="accordion">
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag principal" style="margin-right:8px;">Principal</span>"Design the network connectivity from a Singapore FSI firm's DC to AWS ap-southeast-1 for a critical payments platform."</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body">
+        <p><strong>Strong answer:</strong> "For a critical payments platform, I'd design for zero-tolerance on connectivity failure with both performance and compliance requirements. The architecture: two 10 Gbps Direct Connect Dedicated Connections from different DX locations — Equinix SG1 and Equinix SG2. Diverse paths eliminate single-facility failure as a risk. MACsec enabled on both connections for Layer 2 encryption — satisfies MAS TRM §11.3.2 without IPSec overhead.</p>
+        <p>Both DX connections attach to a Direct Connect Gateway via Transit VIFs. The DX Gateway associates with a Transit Gateway in ap-southeast-1, which serves all production VPCs. This gives us one BGP session per DX connection, and adding new VPCs doesn't require any DX or BGP changes — just attach to TGW.</p>
+        <p>BFD enabled on all VIFs at 300ms/3 multiplier — sub-second failure detection. BGP traffic engineering: MED 100 on DX advertisements to AWS (prefer DX for return traffic), MED 200 on VPN. LOCAL_PREF 200 on DX routes on our router (prefer DX for outbound). AS_PATH prepending on VPN backup advertisements.</p>
+        <p>Site-to-Site VPN (IKEv2, AES-256-GCM) as last-resort backup over internet. Even though VPN can't carry full production bandwidth, it maintains management access and critical low-volume payment traffic during DX outages. The DX Gateway also attaches to ap-southeast-3 TGW for DR connectivity — no additional circuit needed when failing over to the DR region. Annual failover test per MAS TRM §14.2."</p>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag principal" style="margin-right:8px;">Principal</span>"We have 20 VPCs and are currently using Private VIFs for the first 5. How do we scale to all 20?"</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body">
+        <p><strong>Strong answer:</strong> "Private VIFs don't scale beyond a handful of VPCs because each requires a separate VGW attachment and BGP session on your on-prem router. At 20 VPCs you'd have 20 BGP sessions, potentially approaching the 50 VIF per connection limit, and every new VPC requires a VLAN and VIF change. The migration path is to Transit VIF + DX Gateway + Transit Gateway.</p>
+        <p>Migration approach: First, create a TGW and attach all VPCs to it (this doesn't break existing connectivity). Then create a DX Gateway and associate the TGW with it. Create a Transit VIF pointing to the DXGW — this is the new unified connectivity path. Test connectivity through the Transit VIF to all VPCs. Once verified, decommission the existing Private VIFs one by one during maintenance windows. The on-prem router config simplifies from 5 BGP sessions to 1. Future VPC additions require only a TGW attachment — no DX changes needed. The entire migration can be done without a connectivity outage if planned correctly."</p>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag principal" style="margin-right:8px;">Principal</span>"After a DX maintenance window, we noticed traffic from AWS was coming back via VPN instead of DX. What happened?"</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body">
+        <p><strong>Strong answer:</strong> "This is asymmetric routing — your on-prem traffic is going out via DX (correct, based on LOCAL_PREF on your router), but AWS return traffic is using the VPN path. The root cause is missing or misconfigured BGP traffic engineering on the AWS-facing advertisements.</p>
+        <p>When both DX and VPN advertise the same on-prem prefixes to AWS, AWS needs guidance on which path to use for return traffic. Without MED, AWS may choose the VPN path based on its own internal route selection (shortest AS_PATH, lower peer preference, or load balancing). Fix: configure your BGP outbound route-map to set MED=100 on DX VIF advertisements and MED=200 on VPN advertisements. AWS uses MED as a hint — lower value preferred for the same prefix from the same ASN. After applying, use traceroute from an EC2 instance to your on-prem IP to verify the return path goes through the DX endpoint. The issue likely surfaced after the maintenance window because the BGP session was reset and re-advertised routes may have different attributes than before."</p>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag principal" style="margin-right:8px;">Principal</span>"Explain why Direct Connect provides better latency than VPN even when both use the same physical path from the DC to the ISP."</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body">
+        <p><strong>Strong answer:</strong> "The latency advantage of DX over VPN comes from the network path, not the encryption overhead. IPSec processing on modern hardware adds less than 1ms — that's not the differentiator. The difference is the network path itself.</p>
+        <p>With Site-to-Site VPN, the IPSec tunnel endpoint is a VPN gateway in the AWS region. Your traffic goes: DC → your ISP → internet backbone → AWS's edge → AWS network → VPN endpoint → VPC. The internet portion involves multiple hops across public peering points, congestion at IX (internet exchange) peering, and variable routing. Singapore to ap-southeast-1 over the internet: 10–30ms, variable.</p>
+        <p>With Direct Connect, the physical circuit goes from your DC cross-connect at Equinix SG1 directly to AWS's router at that same facility. The traffic then flows over AWS's private network backbone — not the public internet — from the DX location to the AWS VPC. AWS's Singapore DX locations are co-located with or directly connected to AWS's ap-southeast-1 region infrastructure. Singapore DC to ap-southeast-1 over DX: 2–5ms, consistent. The internet path is eliminated. This consistency is what makes DX suitable for financial-grade workloads — not the average latency, but the p99 latency and the absence of congestion-driven variability."</p>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)"><span><span class="acc-tag principal" style="margin-right:8px;">Principal</span>"A client has one DX connection that just failed. They have no VPN backup. What are their options in the next 30 minutes?"</span><span class="acc-chevron">▼</span></div>
+      <div class="acc-body">
+        <p><strong>Strong answer:</strong> "Honest answer: their options in 30 minutes are limited, which is why this is a design failure, not just an operational failure. The immediate options: (1) If they have internet access from on-prem, set up a Site-to-Site VPN immediately. Creating a VPN in AWS takes 5 minutes. Configuring it on a Cisco/Juniper router takes another 10–15 minutes for a basic IPSec config. BGP up within 30 minutes is achievable if there's someone on the router console. VPN performance will be limited but connectivity is restored.</p>
+        <p>(2) If they have workloads that can tolerate DNS cutover, shift traffic to any internet-facing endpoints (API Gateway, ALB with internet-facing DNS) temporarily. This bypasses the DX dependency for some traffic. (3) For non-time-sensitive workloads, they wait for DX restoration — AWS's SLA for DX is 99.9% (for a single connection) which means up to 8.7 hours downtime per year is within SLA.</p>
+        <p>The broader response: use this incident to justify the VPN backup architecture. The business case now includes the actual downtime cost from this event. Going forward: VPN backup provisioned and tested before the next DX maintenance window. The post-incident action item is not just 'add VPN' but 'add VPN, test annual failover, and establish an operational runbook.' This is the MAS TRM §14 BCM requirement that was never implemented."</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S21 -->
+<section class="section-block" id="s21">
+  <div class="section-label"><span class="num">21</span> / TERRAFORM</div>
+  <h2 class="section-title">Terraform Deep Dive — Production Module <a class="anchor" href="#s21">#</a></h2>
+
+  <h3>Module Structure</h3>
+  <div class="code-wrap"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  <pre>modules/hybrid-connectivity/
+├── main.tf          <span class="cm"># VGW, CGW, VPN connection, DX Gateway, DXGW associations</span>
+├── dx_vifs.tf       <span class="cm"># Virtual Interface resources (Private VIF, Transit VIF)</span>
+├── routing.tf       <span class="cm"># Route propagation, TGW route table entries</span>
+├── monitoring.tf    <span class="cm"># CloudWatch alarms for DX + VPN state changes</span>
+├── variables.tf     <span class="cm"># dx_connection_id, on_prem_asn, on_prem_cidrs, vpn_psk</span>
+└── outputs.tf       <span class="cm"># vgw_id, dxgw_id, vpn_connection_id, tunnel_ips</span></pre>
+  </div>
+
+  <details class="tf-block">
+    <summary>🧭 Complete Hybrid Connectivity Module — main.tf <span class="tf-badge">Production HCL</span></summary>
+    <div class="code-wrap"><div class="code-header"><span class="code-lang">HCL — modules/hybrid-connectivity/main.tf</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm"># ── VGW ──────────────────────────────────────────────────────</span>
+<span class="kw">resource</span> <span class="str">"aws_vpn_gateway"</span> <span class="str">"main"</span> {
+  vpc_id          = <span class="kw">var</span>.vpc_id
+  amazon_side_asn = <span class="kw">var</span>.amazon_side_asn   <span class="cm"># Default 64512</span>
+  tags            = <span class="kw">merge</span>(<span class="kw">var</span>.tags, { Name = <span class="str">"${var.name_prefix}-vgw"</span> })
+}
+
+<span class="cm"># Enable BGP route propagation for all provided route table IDs</span>
+<span class="kw">resource</span> <span class="str">"aws_vpn_gateway_route_propagation"</span> <span class="str">"this"</span> {
+  <span class="kw">for_each</span>       = <span class="kw">toset</span>(<span class="kw">var</span>.route_table_ids)
+  vpn_gateway_id = <span class="kw">aws_vpn_gateway</span>.main.id
+  route_table_id = <span class="kw">each</span>.value
+  <span class="cm"># Pass ALL route table IDs (private subnets, TGW attachments, etc.)</span>
+}
+
+<span class="cm"># ── Customer Gateway ─────────────────────────────────────────</span>
+<span class="kw">resource</span> <span class="str">"aws_customer_gateway"</span> <span class="str">"primary"</span> {
+  bgp_asn    = <span class="kw">var</span>.on_prem_bgp_asn
+  ip_address = <span class="kw">var</span>.on_prem_public_ip
+  type       = <span class="str">"ipsec.1"</span>
+  tags       = <span class="kw">merge</span>(<span class="kw">var</span>.tags, { Name = <span class="str">"${var.name_prefix}-cgw-primary"</span> })
+}
+
+<span class="cm"># ── Site-to-Site VPN (IKEv2 + AES-256-GCM hardened) ─────────</span>
+<span class="kw">resource</span> <span class="str">"aws_vpn_connection"</span> <span class="str">"backup"</span> {
+  <span class="cm"># Attach to TGW if provided, otherwise VGW</span>
+  vpn_gateway_id      = <span class="kw">var</span>.transit_gateway_id == <span class="str">""</span> ? <span class="kw">aws_vpn_gateway</span>.main.id : <span class="kw">null</span>
+  transit_gateway_id  = <span class="kw">var</span>.transit_gateway_id != <span class="str">""</span> ? <span class="kw">var</span>.transit_gateway_id : <span class="kw">null</span>
+  customer_gateway_id = <span class="kw">aws_customer_gateway</span>.primary.id
+  type                = <span class="str">"ipsec.1"</span>
+  static_routes_only  = <span class="kw">false</span>
+
+  tunnel1_ike_versions                 = [<span class="str">"ikev2"</span>]
+  tunnel1_phase1_encryption_algorithms = [<span class="str">"AES256"</span>]
+  tunnel1_phase2_encryption_algorithms = [<span class="str">"AES256GCM16"</span>]
+  tunnel1_phase1_dh_group_numbers      = [<span class="nm">20</span>]
+  tunnel1_phase2_dh_group_numbers      = [<span class="nm">20</span>]
+  tunnel1_phase1_integrity_algorithms  = [<span class="str">"SHA2-256"</span>]
+  tunnel1_preshared_key                = <span class="kw">var</span>.vpn_psk_tunnel1   <span class="cm"># From Secrets Manager</span>
+  tunnel1_dpd_timeout_action           = <span class="str">"restart"</span>
+  tunnel1_startup_action               = <span class="str">"start"</span>
+
+  tunnel2_ike_versions                 = [<span class="str">"ikev2"</span>]
+  tunnel2_phase1_encryption_algorithms = [<span class="str">"AES256"</span>]
+  tunnel2_phase2_encryption_algorithms = [<span class="str">"AES256GCM16"</span>]
+  tunnel2_phase1_dh_group_numbers      = [<span class="nm">20</span>]
+  tunnel2_phase2_dh_group_numbers      = [<span class="nm">20</span>]
+  tunnel2_phase1_integrity_algorithms  = [<span class="str">"SHA2-256"</span>]
+  tunnel2_preshared_key                = <span class="kw">var</span>.vpn_psk_tunnel2
+  tunnel2_dpd_timeout_action           = <span class="str">"restart"</span>
+  tunnel2_startup_action               = <span class="str">"start"</span>
+
+  tags = <span class="kw">merge</span>(<span class="kw">var</span>.tags, { Name = <span class="str">"${var.name_prefix}-vpn-backup"</span> })
+}
+
+<span class="cm"># ── DX Gateway (global) ──────────────────────────────────────</span>
+<span class="kw">resource</span> <span class="str">"aws_dx_gateway"</span> <span class="str">"main"</span> {
+  name            = <span class="str">"${var.name_prefix}-dxgw"</span>
+  amazon_side_asn = <span class="str">"${var.amazon_side_asn}"</span>
+}
+
+<span class="cm"># Associate TGW with DX Gateway</span>
+<span class="kw">resource</span> <span class="str">"aws_dx_gateway_association"</span> <span class="str">"tgw"</span> {
+  <span class="kw">count</span>                 = <span class="kw">var</span>.transit_gateway_id != <span class="str">""</span> ? <span class="nm">1</span> : <span class="nm">0</span>
+  dx_gateway_id         = <span class="kw">aws_dx_gateway</span>.main.id
+  associated_gateway_id = <span class="kw">var</span>.transit_gateway_id
+  allowed_prefixes      = <span class="kw">var</span>.on_prem_cidrs   <span class="cm"># Minimum set — never use 0.0.0.0/0</span>
+}
+
+<span class="cm"># ── Outputs ───────────────────────────────────────────────────</span>
+<span class="kw">output</span> <span class="str">"vgw_id"</span>             { value = <span class="kw">aws_vpn_gateway</span>.main.id }
+<span class="kw">output</span> <span class="str">"dxgw_id"</span>            { value = <span class="kw">aws_dx_gateway</span>.main.id }
+<span class="kw">output</span> <span class="str">"vpn_connection_id"</span>   { value = <span class="kw">aws_vpn_connection</span>.backup.id }
+<span class="kw">output</span> <span class="str">"vpn_tunnel1_ip"</span>      { value = <span class="kw">aws_vpn_connection</span>.backup.tunnel1_address }
+<span class="kw">output</span> <span class="str">"vpn_tunnel2_ip"</span>      { value = <span class="kw">aws_vpn_connection</span>.backup.tunnel2_address }
+<span class="kw">output</span> <span class="str">"vpn_config_download"</span> { value = <span class="str">"Download from console: Site-to-Site VPN → ${aws_vpn_connection.backup.id} → Download configuration"</span> }</pre>
+    </div></details>
+
+  <h3>Key Terraform Patterns for DX/VPN</h3>
+  <p><strong>Route propagation via <code>for_each</code>:</strong> The <code>aws_vpn_gateway_route_propagation</code> resource must be applied to every route table that needs on-prem routes. Using <code>for_each = toset(var.route_table_ids)</code> ensures all route tables are covered without duplicating code.</p>
+  <p><strong>VGW vs TGW conditional attachment:</strong> The VPN connection accepts either <code>vpn_gateway_id</code> or <code>transit_gateway_id</code> — not both. The conditional pattern shown uses a variable to switch between the two, keeping the module reusable.</p>
+  <p><strong>Physical DX connection ID as a variable:</strong> The DX physical connection cannot be created by Terraform — it requires the LOA-CFA process. The connection ID from the AWS console is passed in as a variable. The VIF resources (aws_dx_private_virtual_interface, aws_dx_transit_virtual_interface) use this ID to create the logical layer on top of the physical connection.</p>
+  <p><strong>PSK in variables, not hardcoded:</strong> Pre-shared keys must come from Secrets Manager, not from source code. In the module, <code>var.vpn_psk_tunnel1</code> is passed in from a Secrets Manager data source in the calling module. Never hardcode PSKs in Terraform — they end up in tfstate (which is stored in S3) and in git history.</p>
+
+  <div class="callout career">
+    <div class="ct">💼 Career Application</div>
+    <p>A Terraform module for hybrid connectivity is one of the most deployable portfolio artifacts for infrastructure roles. When you can show a module that: handles both VGW and TGW attachment via conditional logic, propagates routes to all provided route table IDs, deploys hardened IKEv2 VPN with all tunnel options specified, and outputs the tunnel IPs and connection ID for router configuration — you've demonstrated production-quality IaC beyond what most candidates show. Add the DX Gateway and Transit VIF resources and you have a module that covers the full hybrid connectivity stack. This is portfolio-quality Terraform.</p>
+  </div>
+</section>
+
+<!-- S22 -->
+<section class="section-block" id="s22">
+  <div class="section-label"><span class="num">22</span> / FURTHER LEARNING</div>
+  <h2 class="section-title">Further Learning &amp; Next Steps <a class="anchor" href="#s22">#</a></h2>
+
+  <div class="table-wrap"><table>
+    <thead><tr><th>Resource</th><th>Why It Matters</th><th>Time</th></tr></thead>
+    <tbody>
+      <tr><td><strong>AWS Direct Connect User Guide — Resilience</strong><br>docs.aws.amazon.com/directconnect/latest/UserGuide/resiliency_toolkit.html</td><td>AWS's official resiliency patterns for DX — Maximum, High, Development resilience models. The basis for every DX architecture recommendation.</td><td>1 hr</td></tr>
+      <tr><td><strong>AWS re:Invent: "AWS Direct Connect deep dive"</strong><br>Search YouTube — sessions from 2021–2023</td><td>Covers DX internals, BGP routing in depth, and real-world failover patterns. The network engineering sessions go well beyond what the docs cover.</td><td>1 hr video</td></tr>
+      <tr><td><strong>VyOS BGP + IPSec Lab Guide</strong><br>vyos.io/documentation</td><td>VyOS is the best free lab router for AWS VPN testing. The documentation covers BGP + IPSec configuration matching AWS's requirements exactly.</td><td>2 hrs setup + lab</td></tr>
+      <tr><td><strong>AWS Site-to-Site VPN Configuration Examples</strong><br>docs.aws.amazon.com/vpn/latest/s2svpn/your-cgw.html</td><td>Vendor-specific configuration examples for Cisco, Juniper, Fortinet, and 30+ other vendors. When configuring real equipment, start here.</td><td>Reference as needed</td></tr>
+      <tr><td><strong>BGP Design for AWS DX (AWS Architecture Blog)</strong><br>aws.amazon.com/blogs/networking-and-content-delivery</td><td>Real-world BGP traffic engineering examples for DX. MED, AS_PATH, and ECMP patterns with actual router config snippets.</td><td>1 hr reading</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>SAP-C02 High-Frequency Topics from This Guide</h3>
+  <div class="callout info">
+    <div class="ct">🎯 Exam Focus Areas</div>
+    <ul>
+      <li><strong>VIF types:</strong> Private (single VPC via VGW), Public (AWS public services), Transit (TGW via DXGW) — exam tests which VIF for which scenario constantly</li>
+      <li><strong>DX Gateway purpose:</strong> Multi-region/multi-VPC from one DX connection — "how do you connect one DX to multiple VPCs in different regions?" → DXGW</li>
+      <li><strong>Route propagation:</strong> VGW learns routes but doesn't insert them without propagation enabled — this is a favourite exam gotcha</li>
+      <li><strong>DX vs VPN for cost/latency/time:</strong> DX = consistent latency, weeks to provision, high cost; VPN = variable latency, minutes, low cost</li>
+      <li><strong>BGP traffic engineering:</strong> LOCAL_PREF (your side, outbound), MED (to AWS, inbound guidance), AS_PATH (length manipulation)</li>
+      <li><strong>BFD purpose:</strong> Sub-second DX failure detection → fast failover to VPN. Without BFD: 90-second BGP holddown.</li>
+      <li><strong>LAG:</strong> Bond multiple DX connections for bandwidth + link redundancy. Max 4 connections per LAG.</li>
+      <li><strong>MACsec:</strong> Layer 2 encryption on DX, available on 10/100 Gbps Dedicated only. Satisfies encryption in transit without IPSec overhead.</li>
+    </ul>
+  </div>
+
+  <h3>What This Guide Feeds Into</h3>
+  <ul>
+    <li><strong>Guide 03 (Route 53):</strong> Hybrid DNS with Route 53 Resolver Inbound/Outbound endpoints — requires DX or VPN connectivity established here</li>
+    <li><strong>Guide 02 (TGW):</strong> Transit Gateway as the hub for Transit VIF connectivity — the TGW patterns from Guide 02 are the destination for the Transit VIF from this guide</li>
+    <li><strong>Guide 50 (AWS Network Firewall):</strong> Inspection of DX/VPN traffic flowing into VPCs via Network Firewall in the VPC — builds on this guide's connectivity patterns</li>
+    <li><strong>Guide 51 (Landing Zone):</strong> The Network Hub account's DX and TGW configuration — this guide is the detailed implementation of the connectivity layer referenced in the Landing Zone pattern</li>
+  </ul>
+
+  <div class="callout career">
+    <div class="ct">💼 Career Application — Your Superpower</div>
+    <p>This guide maps more directly to your background than any other in the learning path. BGP, leased circuits, colocation, redundant uplinks, failover patterns — you've operated the physical-world equivalents for years. The translation from "MPLS CE-PE BGP peering" to "DX Private VIF BGP session" is almost mechanical once you recognise the structural similarity. Where most cloud architects struggle with DX (because they came from a dev/DevOps background and have never operated a BGP-capable router), you already have the mental model. Your task is to map the AWS-specific terminology (VIF, VGW, DXGW, BFD settings) onto the concepts you already know. In FSI cloud architect interviews, the hybrid connectivity question is where candidates with DC engineering backgrounds consistently outperform pure cloud candidates. This is your home turf.</p>
+  </div>
+
+  <div style="margin-top:60px;padding-top:28px;border-top:1px solid var(--border);text-align:center;color:var(--text3);font-size:12px;font-family:var(--font-mono);">
+    Guide 07 — AWS Direct Connect &amp; Site-to-Site VPN<br>
+    AWS Principal Architect Learning Path · Phase 1 · Week 7<br>
+    ap-southeast-1 · SAP-C02 Domains 1.2 + 2.3 · MAS TRM 2021 §11, §14
+  </div>
+</section>
+
+</div></main>
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.theme===t));try{localStorage.setItem('g07-theme',t);}catch(e){}}
+(function(){try{const s=localStorage.getItem('g07-theme');if(s)setTheme(s);}catch(e){}})();
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+function toggleToc(el){const i=el.nextElementSibling;i.style.display=i.style.display==='none'?'':'none';}
+window.addEventListener('scroll',function(){const s=window.scrollY,t=document.body.scrollHeight-window.innerHeight;document.getElementById('progress-bar').style.width=(t>0?s/t*100:0)+'%';document.getElementById('back-top').classList.toggle('visible',s>400);});
+const secs=document.querySelectorAll('section[id]'),tocs=document.querySelectorAll('.toc-item');
+secs.forEach(s=>new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const id=e.target.id;tocs.forEach(i=>i.classList.toggle('active',i.getAttribute('href')==='#'+id));}}),{rootMargin:'-20% 0px -75% 0px'}).observe(s));
+function toggleAcc(h){h.closest('.acc-item').classList.toggle('open');}
+function copyCode(btn){const t=btn.closest('.code-wrap').querySelector('pre').innerText;navigator.clipboard.writeText(t).then(()=>{btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied');},2000);});}
+</script>
+</body>
+</html>
